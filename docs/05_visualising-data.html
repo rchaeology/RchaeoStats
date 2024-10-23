@@ -1154,7 +1154,6 @@ that we have 13 observations that couldn't be plotted, because either the y or x
 
 
 
-
 ::: {.cell}
 
 ```{.r .cell-code}
@@ -1210,12 +1209,10 @@ mortuary_data |>
 
 
 
-
 (don't worry if you still see a warning in your console but not here. I have suppressed
 the warning since there's no need to keep showing it.)
 
 Or maybe you don't like blue...
-
 
 
 
@@ -1236,7 +1233,6 @@ mortuary_data |>
 
 
 
-
 There. Perfect! Right...?
 
 ### Adding aesthetics
@@ -1245,7 +1241,6 @@ The colours we used above are purely aesthetic and add no new information to our
 We can now already see that there is a positive relationship between the variables
 `Length` and `Width`. To take this relationship a step further, we can map a variable
 to colour instead of just providing colour to the `geom`.
-
 
 
 
@@ -1266,12 +1261,10 @@ mortuary_data |>
 
 
 
-
 Now we can see the relationship (or lack thereof) in the size of burial between the
 different phases of occupation. To really drive home the relationship between the
 variables we can add a curve with `geom_smooth()`. We want to see the linear relationship
 so we will use `method = "lm"`.
-
 
 
 
@@ -1289,7 +1282,6 @@ mortuary_data |>
 ![](05_visualising-data_files/figure-html/unnamed-chunk-47-1.png){width=672}
 :::
 :::
-
 
 
 
@@ -1532,7 +1524,6 @@ phase.
 
 
 
-
 ::: {.cell}
 
 ```{.r .cell-code}
@@ -1548,12 +1539,10 @@ percent_sex <- mortuary_data_sex |>
 
 
 
-
 Here we have `count`ed the number of observations of each
 value of sex within each `Phase`, then we group by phase so that we can calculate
 the percentage of each count (`n`) within each phase, which we assign to a new
 variable `percent` using mutate. We can now use this in a plot.
-
 
 
 
@@ -1574,13 +1563,11 @@ percent_sex |>
 
 
 
-
 The problem is that `geom_bar()` only allows and *x* **or** *y* aesthetic,
 not both. To fix this there are two options:
 
 1. use `geom_bar(stat = "identity")`
 2. use `geom_col()`
-
 
 
 
@@ -1593,7 +1580,6 @@ percent_sex |>
     geom_col()
 ```
 :::
-
 
 
 
