@@ -11,7 +11,7 @@ format:
 
 ```{r}
 library(here)
-mortuary_data <- readxl::read_xlsx(here("data/mortuary-data2.xlsx"))
+mortuary_data <- readxl::read_xlsx(here("data/mortuary-data.xlsx"))
 sheep_data <- readr::read_csv(here("data/sheep-data.csv"))
 ```
 
