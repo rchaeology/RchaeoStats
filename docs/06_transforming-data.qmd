@@ -792,7 +792,7 @@ total_artefact_count
 And export it as a *.csv* file to our *data/* folder.
 
 ```{r}
-write_csv(total_artefact_count, here("data/total_artefact_count.csv"))
+write_csv(total_artefact_count, here("data/total-artefact-count.csv"))
 ```
 
 ### `pivot_wider()`
