@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Cleaning data with tidyverse – RchaeoStats</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../docs/05_visualising-data.html" rel="next">
+<link href="../docs/03_rstudio-project.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Materials</li><li class="breadcrumb-item"><a href="../docs/04_cleaning-data.html">04 - Cleaning Data</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../images/hexsticker.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none">
+      </a>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../assignments.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Assignments</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Materials</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Core</span></span>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/00_install-r-rstudio.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">00 - Getting Started</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/01_r-basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">01 - R Basics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/02_workflow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">02 - An Example Workflow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/03_rstudio-project.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">03 - Getting Organised</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/04_cleaning-data.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">04 - Cleaning Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">EDA</span></span>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/05_visualising-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">05 - Visualising Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/06_transforming-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">06 - Transforming Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Extensions</span></span>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/08_communicating-results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">08 - Communicating Results</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Slides</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../slides/content/00_welcome.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">00 - Welcome</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../slides/content/01_rstudio-project.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">01 - RStudio Projects</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#downloading-data" id="toc-downloading-data" class="nav-link active" data-scroll-target="#downloading-data">Downloading data</a></li>
+  <li><a href="#importing-data" id="toc-importing-data" class="nav-link" data-scroll-target="#importing-data">Importing data</a></li>
+  <li><a href="#renaming-variables" id="toc-renaming-variables" class="nav-link" data-scroll-target="#renaming-variables">Renaming variables</a></li>
+  <li><a href="#data-types" id="toc-data-types" class="nav-link" data-scroll-target="#data-types">Data types</a></li>
+  <li><a href="#modifying-variables-with-mutate" id="toc-modifying-variables-with-mutate" class="nav-link" data-scroll-target="#modifying-variables-with-mutate">Modifying variables with <code>mutate()</code></a></li>
+  <li><a href="#modifying-strings-with-stringr" id="toc-modifying-strings-with-stringr" class="nav-link" data-scroll-target="#modifying-strings-with-stringr">Modifying strings with stringr</a></li>
+  <li><a href="#exporting-data" id="toc-exporting-data" class="nav-link" data-scroll-target="#exporting-data">Exporting data</a></li>
+  <li><a href="#finishing-up" id="toc-finishing-up" class="nav-link" data-scroll-target="#finishing-up">Finishing up</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Materials</li><li class="breadcrumb-item"><a href="../docs/04_cleaning-data.html">04 - Cleaning Data</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Cleaning data with tidyverse</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Prerequisites
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<section id="knowledge" class="level4">
+<h4 class="anchored" data-anchor-id="knowledge">Knowledge</h4>
+<p>R basics + Example workflow + Project organisation</p>
+</section>
+<section id="objects" class="level4">
+<h4 class="anchored" data-anchor-id="objects">Objects</h4>
+<p>Project organisation</p>
+</section>
+</div>
+</div>
+</div>
+<p>Data cleaning often takes up a large portion of an analysis, especially if the raw data were not collected with the intention to analyse the data in R.</p>
+<p>If the raw data are collected with <a href="">tidy data principles</a> in mind (discussed briefly in <a href="../docs/06_transforming-data.html#tidy-data">EDA: Transforming data with tidyverse</a>), this will greatly reduce the steps needed to clean the data, and allow you to move quickly on to the more fun visualisations and modelling. That being said, cleaning data serves as a nice learning tool to introduce various concepts of the R programming language.</p>
+<section id="downloading-data" class="level2">
+<h2 class="anchored" data-anchor-id="downloading-data">Downloading data</h2>
+<p>The dataset from <a href="../docs/02_workflow.html">An Example Workflow</a> was already cleaned and in <em>.csv</em> format, which is why we were able to read it directly into R using <code>read_csv()</code> and the url. This is not the case with for the <em>.xlsx</em> file we will be working with here, and the <code>read_xlsx()</code> function we will use does not work with a url as the path to the file.</p>
+<p>We could go to the site, download it manually, and place it in the <em>data-raw/</em> folder; but, in the interest of reproducibility, we will create a script to download and clean the data.</p>
+<p>Create a new R script called <em>mortuary_data.R</em>, and save it in <em>data-raw/</em>. We can then use the <code>download.file()</code> function to download the dataset using the url for the xlsx download: <a href="https://edu.nl/x4bqv" class="uri">https://edu.nl/x4bqv</a>.</p>
+<p>We will also load <strong>tidyverse</strong> and <span class="pkg">here</span> at the top of the script.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>xlsx_url <span class="ot">&lt;-</span> <span class="st">"https://edu.nl/x4bqv"</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="at">url =</span> xlsx_url, <span class="at">destfile =</span> <span class="st">"data-raw/mortuary-data.xlsx"</span>, <span class="at">mode =</span> <span class="st">"wb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Run the code and we should see a file called <em>mortuary-data.xlsx</em> in the <em>data-raw/</em> folder.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>There is <strong>NO</strong> reason to edit any of the files in the <em>data-raw</em> folder manually.</p>
+<p>Raw data should not be modified, and derived data are produced from the analysis script, so they also shouldn’t be edited manually.</p>
+</div>
+</div>
+<div id="data-dict" class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Data dictionary
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Layer</td>
+<td>Layer of the grave. 1 = Upper culture layer; 2 = Lower culture layer.</td>
+</tr>
+<tr class="even">
+<td>ID</td>
+<td>Unique identifier of burials</td>
+</tr>
+<tr class="odd">
+<td>Burial_axis</td>
+<td>Not sure. Not relevant</td>
+</tr>
+<tr class="even">
+<td>Degree_axis</td>
+<td>Not sure. Not relevant</td>
+</tr>
+<tr class="odd">
+<td>Condition</td>
+<td>Condition of the burial. 1 = complete; 2 = partial disturbed; 3 = severe disturbed; 4 = unidentified.</td>
+</tr>
+<tr class="even">
+<td>Gender</td>
+<td>Biological sex of the skeletal remains. 1 = Male; 2 = Probable Male; 3 = Female; 4 = Probable Female.</td>
+</tr>
+<tr class="odd">
+<td>Age</td>
+<td>Age-at-death of the skeletal remains. 1 = infant (0-2 years); 2 = child (3-12 years); 3 = teenager (12-20 years); 4 = young adult(20-35 years); 5 = middle adult (35-50 years); 6 = old adult (50+); 7 = adult (20+); 8 = approximate adult</td>
+</tr>
+<tr class="even">
+<td>Length</td>
+<td>Length of burial</td>
+</tr>
+<tr class="odd">
+<td>Width</td>
+<td>Width of burial</td>
+</tr>
+<tr class="even">
+<td>Height</td>
+<td>Height of burial</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="importing-data" class="level2">
+<h2 class="anchored" data-anchor-id="importing-data">Importing data</h2>
+<p>To import a <em>.xlsx</em> file, we will need to use the <span class="pkg">readxl</span> package, which is part of the <strong>tidyverse</strong>. From the <span class="pkg">readxl</span> package, we need the function <code>read_xlsx()</code>. This allows us to import data from a <em>.xlsx</em> file. We will use the <code>here()</code> function to ensure our filepath is relative to the project root.</p>
+<p>We also need to assign it to an object using the assignment operator, <code>&lt;-</code> to store the data in memory.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>raw_data <span class="ot">&lt;-</span> <span class="fu">read_xlsx</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data-raw/mortuary-data.xlsx"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Organising your script
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>It’s a good idea to organise your script, so you (or someone else) can easily read it at a later point. One useful way of organising a script is by adding headers.</p>
+<p>Code &gt; Insert Section…</p>
+<p>or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd></p>
+</div>
+</div>
+<p>The <code>raw_data</code> object we have created is a <strong>tibble</strong>, which is a structure for tabulated data specific to <strong>tidyverse</strong>. It is a <strong>tibble</strong> because we used the <code>read_xlsx()</code> function from the <span class="pkg">readxl</span> package, which is part of <strong>tidyverse</strong>. If we had used a base R function like <code>read.csv()</code>, we would have created a <strong>data frame</strong>. Base R does not have a function to import <em>.xlsx</em> files, though, so we needed an additional package for that. <strong>Tibbles</strong> and <strong>data frames</strong> are largely interchangeable.</p>
+<p>The main thing you need to know is where you are storing the data file. Ideally, this will be in a folder in the root of your project called <code>data</code>. We have made two separate folders (<em>data/</em> and <em>data-raw/</em>) to distinguish between raw and processed data.</p>
+<p>Let’s try to plot the <code>Height</code> and <code>Weight</code> of the burials and group by <code>Phase</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>raw_data <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Width, <span class="at">y =</span> Height, <span class="at">col =</span> Phase)) <span class="sc">+</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We get the error <code>object 'Height' not found</code>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Console messages
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>There are three types of console messages that you will frequently encounter: <strong>messages</strong>, <strong>warnings</strong>, and <strong>errors</strong>.</p>
+<p><span style="color: blue;"><strong>Messages</strong></span> are just helpful messages to give you some extra information about the code you just ran.</p>
+<p><span style="color: orange;"><strong>Warnings</strong></span> are messages that tell you that, while your code did run successfully, there may have been some problems with the output that you should double check.</p>
+<p><span style="color: red;"><strong>Errors</strong></span> mean your code did not run successfully.</p>
+</div>
+</div>
+<p>Weird… There should be a variable called <code>Height</code>. Let’s take a look:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(raw_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Layer"             "ID"                "Burial_axis"      
+ [4] "Degree_axis"       "Condition"         "Length"           
+ [7] "Width"             "Hight"             "Pit"              
+[10] "sampled"           "start_layer"       "start_depth"      
+[13] "end_depth"         "start_depth_sure"  "old_layer"        
+[16] "Phase"             "Coffin"            "Straw_mat"        
+[19] "Gender"            "Age"               "Agate_bead"       
+[22] "Golden_bead"       "Glass_bead"        "Indo-Pacific_bead"
+[25] "Glass_earring"     "Big_Metal_ring"    "Small_Metal_ring" 
+[28] "Wide_Metal_ring"   "Metal_ring"        "Bell"             
+[31] "Knit"              "fish_shape_knit"   "Metal_string"     
+[34] "Metal_piece"       "Metal_plate"       "Hair_pin"         
+[37] "Niddle"            "Bone_plate"        "Comb"             
+[40] "Coin"              "Porcelain_bowl"    "Porcelain_vessel" 
+[43] "Porcelain_vase"    "Blue_glazed_vase"  "Brown_glazed_vase"
+[46] "Porcelain_piece"   "Ceramic_vase"      "Iron_artifact"    
+[49] "Stone_artifact"    "Grinding_stone"    "Stone_hammer"     
+[52] "Stone_axe"         "Wood_artifact"     "Anping_jar"       
+[55] "Kendi_mouth"      </code></pre>
+</div>
+</div>
+<p>It looks like there’s a typo in the <code>Height</code> variable. Easy fix:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>raw_data <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Width, <span class="at">y =</span> Hight, <span class="at">col =</span> Phase)) <span class="sc">+</span> <span class="co"># change to Hight</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 1 row containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="04_cleaning-data_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We are creating a plot, but something is not quite right. This is what we’re after:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="04_cleaning-data_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-simple callout-none no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Spot the problem(s) with the plot.</p>
+<div class="callout callout-style-simple callout-none no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The <code>Width</code> variable is being treated as a categorical variable. This can be seen on the x-axis as well as the fact that we are unable to calculate the regression line.</p>
+<p>There are also a number of <code>NA</code>s in both the <code>Hight</code> and <code>Phase</code> variables, which indicate missing values.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>It looks like we need to take a closer look at the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(raw_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [125 × 55] (S3: tbl_df/tbl/data.frame)
+ $ Layer            : num [1:125] 1 1 1 1 1 1 1 1 1 1 ...
+ $ ID               : chr [1:125] "0" "1" "2" "3" ...
+ $ Burial_axis      : num [1:125] 1 1 1 1 1 1 1 1 1 1 ...
+ $ Degree_axis      : num [1:125] 290 295 290 290 300 285 310 290 295 300 ...
+ $ Condition        : num [1:125] 3 2 2 1 2 2 3 2 2 1 ...
+ $ Length           : chr [1:125] "115" "102" "104" "130" ...
+ $ Width            : chr [1:125] "70" "60" "75" "82" ...
+ $ Hight            : num [1:125] NA 30 60 60 30 35 13 29 15 60 ...
+ $ Pit              : chr [1:125] "P9" "P051" "P051" "P050" ...
+ $ sampled          : chr [1:125] NA "Y" "Y" NA ...
+ $ start_layer      : num [1:125] 5 14 12 7 2 7 4 8 5 6 ...
+ $ start_depth      : num [1:125] -70 -20 14 -25 -30 -30 -52 -30 -75 4 ...
+ $ end_depth        : num [1:125] NA -50 -46 -85 -60 -65 -65 -59 -90 -56 ...
+ $ start_depth_sure : chr [1:125] NA NA "Y" "Y" ...
+ $ old_layer        : num [1:125] NA 3 4 4 4 4 4 4 4 4 ...
+ $ Phase            : chr [1:125] "pre" "euro" "post" "euro" ...
+ $ Coffin           : num [1:125] 1 NA 1 1 1 1 1 1 1 1 ...
+ $ Straw_mat        : num [1:125] 0 0 1 0 0 0 0 1 0 0 ...
+ $ Gender           : num [1:125] NA NA NA NA 3 NA NA 1 NA NA ...
+ $ Age              : chr [1:125] NA "4" "2" NA ...
+ $ Agate_bead       : num [1:125] NA NA NA NA NA NA NA NA 8 NA ...
+ $ Golden_bead      : num [1:125] NA NA NA 5 2 2 NA 2 NA 2 ...
+ $ Glass_bead       : chr [1:125] NA NA NA NA ...
+ $ Indo-Pacific_bead: chr [1:125] NA NA NA NA ...
+ $ Glass_earring    : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Big_Metal_ring   : num [1:125] 2 NA NA 2 NA 2 NA NA 2 NA ...
+ $ Small_Metal_ring : num [1:125] 1 NA NA 2 NA NA 2 NA NA NA ...
+ $ Wide_Metal_ring  : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Metal_ring       : num [1:125] NA NA NA NA NA NA NA NA NA 3 ...
+ $ Bell             : num [1:125] NA NA NA NA NA 1 NA NA NA NA ...
+ $ Knit             : logi [1:125] NA NA NA NA NA NA ...
+ $ fish_shape_knit  : num [1:125] NA NA NA 1 NA NA NA NA NA NA ...
+ $ Metal_string     : num [1:125] NA NA NA NA NA 1 NA NA NA 1 ...
+ $ Metal_piece      : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Metal_plate      : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Hair_pin         : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Niddle           : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Bone_plate       : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Comb             : num [1:125] 1 NA NA NA NA NA NA NA NA NA ...
+ $ Coin             : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Porcelain_bowl   : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Porcelain_vessel : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Porcelain_vase   : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Blue_glazed_vase : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Brown_glazed_vase: num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Porcelain_piece  : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Ceramic_vase     : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Iron_artifact    : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Stone_artifact   : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Grinding_stone   : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Stone_hammer     : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Stone_axe        : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Wood_artifact    : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Anping_jar       : num [1:125] NA NA NA NA NA NA NA NA NA NA ...
+ $ Kendi_mouth      : num [1:125] NA NA NA NA NA NA NA NA NA NA ...</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Other useful functions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Some useful functions to get a quick look at the data are:</p>
+<ul>
+<li><code>view()</code> view the whole dataset (opens new tab)</li>
+<li><code>head()</code> see the first 6 rows</li>
+<li><code>tail()</code> see the last 6 rows</li>
+<li><code>str()</code> see the <strong>str</strong>ucture of the data</li>
+<li><code>names()</code> see the column <strong>names</strong></li>
+<li><code>dim()</code> get the <strong>dim</strong>ensions of the data (row number and column number)</li>
+<li><code>nrow()</code> get the <strong>n</strong>umber of <strong>row</strong>s</li>
+<li><code>ncol()</code> get the <strong>n</strong>umber of <strong>col</strong>umns</li>
+</ul>
+</div>
+</div>
+<p>It looks like there are a couple of variables that should be numeric (num) are actually character (chr). We also have the typo we found before, <code>Hight</code> and a violation of the R naming rules, <code>Indo-Pacific_bead</code>.</p>
+</section>
+<section id="renaming-variables" class="level2">
+<h2 class="anchored" data-anchor-id="renaming-variables">Renaming variables</h2>
+<p>It would be best to fix the variable names right away to prevent mistakes when using them in future operations where we will intuitively want to type <code>Height</code>.</p>
+<p>There are certain rules for naming objects in R. Names should:</p>
+<ul>
+<li>contain only alphanumeric characters, underscores, <code>_</code>, and decimal points, <code>.</code></li>
+<li>start with a letter</li>
+<li>not interfere with other R objects (this will take some experience)</li>
+</ul>
+<p>And then there are further recommendations:</p>
+<ul>
+<li>use nouns for objects</li>
+<li>use verbs for functions</li>
+<li>keep them short, but explanatory (e.g., <code>mean_height</code>, not <code>x</code>)</li>
+</ul>
+<p>Since <code>Indo-Pacific_bead</code> contains a hyphen, <code>-</code>, whenever we want to use the variable we would have to wrap it in backticks, ```<code>. This is true for all variables containing special characters. To fix this we can</code>rename<code>the variables. The</code>rename()<code>function syntax is</code>rename(data, <new_name> = <old_name>)`.</old_name></new_name></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>renamed_data <span class="ot">&lt;-</span> raw_data <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Height =</span> Hight,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">IndoPacific_bead =</span> <span class="st">`</span><span class="at">Indo-Pacific_bead</span><span class="st">`</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="data-types" class="level2">
+<h2 class="anchored" data-anchor-id="data-types">Data types</h2>
+<p>Some variables that we might expect to be numeric, are coming up as character. We can take a closer look at the values by indexing the column with the dollar symbol, <code>$</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>raw_data<span class="sc">$</span>Length</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] "115" "102" "104" "130" "140" "70"  "85+" "130" "100" "130" "90+" NA   
+ [13] "95"  "76"  "100" "110" NA    "123" "105" "114" "105" "120" "95"  "100"
+ [25] "115" "105" "75"  "135" "113" "140" "73"  "102" "110" "113" "205" "65" 
+ [37] "100" "125" "65"  "120" "88"  "90"  "90"  "125" NA    "70"  "105" "80" 
+ [49] "100" "122" NA    "85"  "53"  "90"  "60"  "55"  "90"  "70"  "90"  "65" 
+ [61] "90"  "75"  "100" "70"  "126" "120" NA    "128" "105" "120" "85"  "66" 
+ [73] "90"  "75"  "90"  "140" NA    "85"  "110" "80"  "100" "115" "75"  NA   
+ [85] NA    NA    "93"  "105" "135" "90"  "90"  NA    "90"  "105" "100" "88" 
+ [97] "100" "95"  NA    "110" "100" "115" "85"  "120" "75"  "75"  "57+" "110"
+[109] "50"  "30"  "70"  "50"  "70"  "84"  "90"  "65"  "130" "65"  NA    NA   
+[121] "60"  "45"  "135" "60"  "155"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>raw_data<span class="sc">$</span>Age</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] NA       "4"      "2"      NA       "4"      "2"      NA       "7"     
+  [9] NA       "7"      NA       NA       NA       "1"      "6"      "4"     
+ [17] NA       "7"      "7"      NA       NA       "5"      "5"      NA      
+ [25] "8"      NA       NA       "7"      NA       "3"      "2"      NA      
+ [33] NA       "7"      "7"      NA       NA       NA       NA       "4"     
+ [41] NA       "8"      "7"      "3 or 4" NA       NA       NA       NA      
+ [49] "4"      "7"      NA       NA       NA       "2"      "2"      "2"     
+ [57] "5"      NA       NA       NA       NA       "2"      "7"      "1"     
+ [65] "5"      "6"      NA       "7"      "7"      "7"      NA       "2"     
+ [73] "2"      "2"      "2"      NA       NA       "4"      "4"      NA      
+ [81] "3"      "7"      NA       "7"      "7"      "7"      NA       NA      
+ [89] "7"      "4"      "4"      NA       "2"      "5"      "4"      "4"     
+ [97] "2"      NA       NA       "7"      "5"      "5"      NA       "5"     
+[105] NA       NA       "2"      NA       NA       NA       "7"      NA      
+[113] NA       NA       NA       NA       NA       NA       NA       NA      
+[121] NA       NA       NA       NA       NA      </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>raw_data<span class="sc">$</span><span class="st">`</span><span class="at">Indo-Pacific_bead</span><span class="st">`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] NA              NA              NA              NA             
+  [5] NA              "1"             NA              NA             
+  [9] "6"             "1526"          "18"            NA             
+ [13] NA              "1"             "1"             NA             
+ [17] NA              "2936"          "116"           NA             
+ [21] "2"             "6"             "3"             NA             
+ [25] "17"            "1"             "197"           NA             
+ [29] NA              NA              "1"             NA             
+ [33] NA              "4"             "6"             NA             
+ [37] "60"            NA              "cluster"       NA             
+ [41] "290"           NA              "19"            NA             
+ [45] NA              NA              "5"             NA             
+ [49] NA              NA              "1"             NA             
+ [53] NA              NA              NA              NA             
+ [57] "6"             NA              NA              NA             
+ [61] NA              "2"             NA              NA             
+ [65] NA              NA              NA              NA             
+ [69] "12"            NA              "unsure number" NA             
+ [73] NA              NA              NA              "4"            
+ [77] NA              NA              "9"             "3"            
+ [81] NA              NA              NA              NA             
+ [85] NA              NA              NA              "1"            
+ [89] "999"           NA              NA              NA             
+ [93] NA              NA              "6"             NA             
+ [97] NA              NA              NA              "13"           
+[101] "1"             NA              NA              NA             
+[105] NA              "1"             NA              "1"            
+[109] NA              NA              NA              NA             
+[113] NA              NA              NA              NA             
+[117] "1"             NA              NA              "1"            
+[121] NA              NA              NA              NA             
+[125] NA             </code></pre>
+</div>
+</div>
+<p>It’s also possible to index a column using the name of the column,</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>raw_data[<span class="st">"Length"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 125 × 1
+   Length
+   &lt;chr&gt; 
+ 1 115   
+ 2 102   
+ 3 104   
+ 4 130   
+ 5 140   
+ 6 70    
+ 7 85+   
+ 8 130   
+ 9 100   
+10 130   
+# ℹ 115 more rows</code></pre>
+</div>
+</div>
+<p>or the position. Because a data frame is two-dimensional, the position needs two values, the row number(s) and column number(s), respectively. To index all rows, leave it blank.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>raw_data[,<span class="dv">6</span>] <span class="co"># all rows, column 6</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 125 × 1
+   Length
+   &lt;chr&gt; 
+ 1 115   
+ 2 102   
+ 3 104   
+ 4 130   
+ 5 140   
+ 6 70    
+ 7 85+   
+ 8 130   
+ 9 100   
+10 130   
+# ℹ 115 more rows</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>As you may have noticed, indexing with <code>$</code> produces a vector, and <code>["name"]</code> and <code>[row,col]</code> produce a tibble/data frame.</p>
+<p>To extract a column as a vector using name and position, use double brackets: <code>[["name"]]</code> and <code>[[col]]</code>.</p>
+</div>
+</div>
+<p>It looks like some characters were used in the columns, which means that the columns could not be imported as numeric. This is because R can only have one type in a column. For example, there is a value in <code>Glass_bead</code> called ‘shatter’. Since a vector, or column in a data frame, can only contain one type, R imported the many of our columns as character.</p>
+<p>There are three main <code>class</code>es of values that we are going to use.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Class</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>character</td>
+<td>Strings of any kind (“word”, “multiple words”, “jka9qy0”)</td>
+</tr>
+<tr class="even">
+<td>logical</td>
+<td>Boolean type (<code>TRUE</code>, <code>FALSE</code>) and <code>NA</code></td>
+</tr>
+<tr class="odd">
+<td>numeric</td>
+<td>Numeric values (1, 2, 3.4, etc.)</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-simple callout-none no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Create the following vectors</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>num_char <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="st">"a"</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>num_logical <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="cn">TRUE</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>char_logical <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>, <span class="cn">TRUE</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>tricky <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="st">"4"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>and see what <code>typeof</code> object they are or what <code>class</code> they are, and see if you can figure out why they are what they are.</p>
+<div class="callout callout-style-simple callout-none no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(num_char)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "character"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(num_logical)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "double"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(char_logical)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "character"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(tricky)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "character"</code></pre>
+</div>
+</div>
+<p>The conversion sequence in R is character &lt; double &lt; integer &lt; logical.</p>
+<p>Logical can be converted to numeric (<code>TRUE</code> becomes 1, and <code>FALSE</code> becomes 0), and numeric can be converted to a string (3 becomes “3”), but a string cannot be converted to numeric or logical (what would “glass” be as a number?). Number strings, e.g., “3”, can be converted back to a numeric.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.numeric</span>(<span class="fu">c</span>(<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2 3</code></pre>
+</div>
+</div>
+<p>But any non-numbers will be replaced with <code>NA</code>. Luckily R warns you about this.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.numeric</span>(<span class="fu">c</span>(<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"three"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: NAs introduced by coercion</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  1  2 NA</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="modifying-variables-with-mutate" class="level2">
+<h2 class="anchored" data-anchor-id="modifying-variables-with-mutate">Modifying variables with <code>mutate()</code></h2>
+<p>We need to modify the <code>Glass_bead</code> variable to numeric. That means we need to decide what to do with ‘shatter’. We could change it to <code>NA</code>, or assume that it represents at least one, and change it to 1. We can do this with the <code>mutate()</code> and <code>if_else()</code> functions.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/bd4ae264-ae51-4d18-bd60-7a058ab42fba_rw_1920.png?h=a3757d1f46f418c59e7e7946d026344e" class="img-fluid figure-img" alt="Cartoon of cute fuzzy monsters dressed up as different X-men characters, working together to add a new column to an existing data frame. Stylized title text reads “dplyr::mutate - add columns, keep existing.” Learn more about dplyr::mutate."></p>
+<figcaption>Allison Horst</figcaption>
+</figure>
+</div>
+<p><code>mutate</code> requires a data frame as the first argument (<code>.data</code>) and then name-value pairs, where the name will be the new column name and the value the new value(s) of the column.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(data, <span class="at">new_column =</span> new_value)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Instead of a single value we can use a function or equation to calculate a new variable. And instead of creating a new variable, we can provide the name of an existing column instead of using a new name. There are a few common issues with multiple variables that we can fix.</p>
+<p>For example, to modify the <code>Glass_bead</code> variable, we can combine <code>mutate</code> and <code>if_else</code> functions to determine what the new values should be based on whether a value matches a certain condition.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  renamed_data,                          <span class="co"># the data</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Glass_bead =</span> <span class="fu">if_else</span>(                  <span class="co"># the new/existing variable and function</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">condition =</span> Glass_bead <span class="sc">==</span> <span class="st">"shatter"</span>, <span class="co"># the condition</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">true =</span> <span class="cn">NA</span>,                           <span class="co"># the new value for matches</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">false =</span> Glass_bead                   <span class="co"># the new value for non-matches</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 125 × 55
+   Layer ID    Burial_axis Degree_axis Condition Length Width Height Pit  
+   &lt;dbl&gt; &lt;chr&gt;       &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;
+ 1     1 0               1         290         3 115    70        NA P9   
+ 2     1 1               1         295         2 102    60        30 P051 
+ 3     1 2               1         290         2 104    75        60 P051 
+ 4     1 3               1         290         1 130    82        60 P050 
+ 5     1 4               1         300         2 140    73        30 P038 
+ 6     1 5               1         285         2 70     50        35 P050 
+ 7     1 6               1         310         3 85+    55        13 P038 
+ 8     1 7               1         290         2 130    60        29 P028 
+ 9     1 8               1         295         2 100    58        15 P038 
+10     1 9               1         300         1 130    70        60 P052 
+# ℹ 115 more rows
+# ℹ 46 more variables: sampled &lt;chr&gt;, start_layer &lt;dbl&gt;, start_depth &lt;dbl&gt;,
+#   end_depth &lt;dbl&gt;, start_depth_sure &lt;chr&gt;, old_layer &lt;dbl&gt;, Phase &lt;chr&gt;,
+#   Coffin &lt;dbl&gt;, Straw_mat &lt;dbl&gt;, Gender &lt;dbl&gt;, Age &lt;chr&gt;, Agate_bead &lt;dbl&gt;,
+#   Golden_bead &lt;dbl&gt;, Glass_bead &lt;chr&gt;, IndoPacific_bead &lt;chr&gt;,
+#   Glass_earring &lt;dbl&gt;, Big_Metal_ring &lt;dbl&gt;, Small_Metal_ring &lt;dbl&gt;,
+#   Wide_Metal_ring &lt;dbl&gt;, Metal_ring &lt;dbl&gt;, Bell &lt;dbl&gt;, Knit &lt;lgl&gt;, …</code></pre>
+</div>
+</div>
+<p><code>if_else()</code> requires three main arguments: (1) the condition to evaluate, (2) the new value for all the values that match the condition, and (3) the new value for all the values that don’t match the condition. The condition therefore needs to produce a Boolean vector. In our case this is produced by <code>Glass_bead == "shatter"</code>, which we can check by running</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>renamed_data<span class="sc">$</span>Glass_bead <span class="sc">==</span> <span class="st">"shatter"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1]    NA    NA    NA    NA    NA    NA FALSE FALSE    NA    NA    NA    NA
+ [13]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+ [25]    NA    NA FALSE    NA    NA    NA    NA    NA    NA    NA    NA    NA
+ [37]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+ [49]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+ [61]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA  TRUE    NA
+ [73]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+ [85]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+ [97]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+[109]    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+[121]    NA    NA    NA    NA    NA</code></pre>
+</div>
+</div>
+<p>In each instance where the value is <code>TRUE</code>, the value is changed to <code>NA</code> (<code>true = NA</code>) and in each instance where the value is <code>FALSE</code>, it stays the same as the original variable (<code>false = Glass_bead</code>).</p>
+<p>We can also use this Boolean vector to index our <code>Glass_bead</code> column.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>renamed_data<span class="sc">$</span>Glass_bead[renamed_data<span class="sc">$</span>Glass_bead <span class="sc">==</span> <span class="st">"shatter"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] NA        NA        NA        NA        NA        NA        NA       
+  [8] NA        NA        NA        NA        NA        NA        NA       
+ [15] NA        NA        NA        NA        NA        NA        NA       
+ [22] NA        NA        NA        NA        NA        NA        NA       
+ [29] NA        NA        NA        NA        NA        NA        NA       
+ [36] NA        NA        NA        NA        NA        NA        NA       
+ [43] NA        NA        NA        NA        NA        NA        NA       
+ [50] NA        NA        NA        NA        NA        NA        NA       
+ [57] NA        NA        NA        NA        NA        NA        NA       
+ [64] NA        NA        NA        NA        "shatter" NA        NA       
+ [71] NA        NA        NA        NA        NA        NA        NA       
+ [78] NA        NA        NA        NA        NA        NA        NA       
+ [85] NA        NA        NA        NA        NA        NA        NA       
+ [92] NA        NA        NA        NA        NA        NA        NA       
+ [99] NA        NA        NA        NA        NA        NA        NA       
+[106] NA        NA        NA        NA        NA        NA        NA       
+[113] NA        NA        NA        NA        NA        NA        NA       
+[120] NA        NA        NA       </code></pre>
+</div>
+</div>
+<p>Reading from the inside out, the code within the square brackets produces a Boolean vector where all entries with ‘shatter’ are <code>TRUE</code> and all other values are <code>FALSE</code>. When you use a Boolean vector to index another vector, it will ‘show’ all values that are <code>TRUE</code> and remove all values that coincide with a <code>FALSE</code> value.</p>
+<p>We can then modify the variable by assigning a new value to the indexed values.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>renamed_data<span class="sc">$</span>Glass_bead[renamed_data<span class="sc">$</span>Glass_bead <span class="sc">==</span> <span class="st">"shatter"</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Which produces the same outcome as the <code>if_else()</code> and <code>mutate()</code> functions.</p>
+<p>This also means that <code>if_else()</code> is limited to a single condition producing two new values. It wouldn’t work to fix <code>IndoPacific_bead</code>. At least not without introducing additional functions and some unnecessary code gymnastics (which I’m avoiding to keep the examples somewhat simple).</p>
+<p><code>case_when()</code> allows us to introduce multiple conditions, and works in a similar way to <code>if_else()</code>. It takes a condition on the left-hand side (LHS), and a value on the right-hand side (RHS), and a <code>.default</code> value for any values that don’t satisfy any of the provided conditions.</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">case_when</span>(condition <span class="sc">~</span> value, <span class="at">.default =</span> value)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  renamed_data,</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">IndoPacicific_bead =</span> <span class="fu">case_when</span>(</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    IndoPacific_bead <span class="sc">==</span> <span class="st">"cluster"</span> <span class="sc">~</span> <span class="cn">NA</span>,       <span class="co"># first condition, LHS ~ RHS</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>    IndoPacific_bead <span class="sc">==</span> <span class="st">"unsure number"</span> <span class="sc">~</span> <span class="cn">NA</span>, <span class="co"># second condition, LHS ~ RHS</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.default =</span> IndoPacific_bead               <span class="co"># for non-matches</span></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>  ) </span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 125 × 56
+   Layer ID    Burial_axis Degree_axis Condition Length Width Height Pit  
+   &lt;dbl&gt; &lt;chr&gt;       &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;
+ 1     1 0               1         290         3 115    70        NA P9   
+ 2     1 1               1         295         2 102    60        30 P051 
+ 3     1 2               1         290         2 104    75        60 P051 
+ 4     1 3               1         290         1 130    82        60 P050 
+ 5     1 4               1         300         2 140    73        30 P038 
+ 6     1 5               1         285         2 70     50        35 P050 
+ 7     1 6               1         310         3 85+    55        13 P038 
+ 8     1 7               1         290         2 130    60        29 P028 
+ 9     1 8               1         295         2 100    58        15 P038 
+10     1 9               1         300         1 130    70        60 P052 
+# ℹ 115 more rows
+# ℹ 47 more variables: sampled &lt;chr&gt;, start_layer &lt;dbl&gt;, start_depth &lt;dbl&gt;,
+#   end_depth &lt;dbl&gt;, start_depth_sure &lt;chr&gt;, old_layer &lt;dbl&gt;, Phase &lt;chr&gt;,
+#   Coffin &lt;dbl&gt;, Straw_mat &lt;dbl&gt;, Gender &lt;dbl&gt;, Age &lt;chr&gt;, Agate_bead &lt;dbl&gt;,
+#   Golden_bead &lt;dbl&gt;, Glass_bead &lt;chr&gt;, IndoPacific_bead &lt;chr&gt;,
+#   Glass_earring &lt;dbl&gt;, Big_Metal_ring &lt;dbl&gt;, Small_Metal_ring &lt;dbl&gt;,
+#   Wide_Metal_ring &lt;dbl&gt;, Metal_ring &lt;dbl&gt;, Bell &lt;dbl&gt;, Knit &lt;lgl&gt;, …</code></pre>
+</div>
+</div>
+</section>
+<section id="modifying-strings-with-stringr" class="level2">
+<h2 class="anchored" data-anchor-id="modifying-strings-with-stringr">Modifying strings with stringr</h2>
+<p>Next on our cleaning list are <code>Width</code> and <code>Length</code>. These were imported as character because of the plus symbol (<code>+</code>) in some of the variables, presumably indicating a measurement ‘or greater’. To fix this, we will just remove the symbol and keep the value (nevermind if this might not be ideal from an analytical perspective…).</p>
+<p>We will use the <span class="pkg">stringr</span> package to work with characters, which, conveniently is also part of <strong>tidyverse</strong> (it’s like they know what functionality we need to clean our data…) Since we’re interested in removing a character, we can use the <code>str_remove()</code> function, which takes a character vector as the first, and a pattern as the second argument.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str_remove</span>(renamed_data<span class="sc">$</span>Width, <span class="st">"</span><span class="sc">\\</span><span class="st">+"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] "70" "60" "75" "82" "73" "50" "55" "60" "58" "70" "60" NA   "60" "45" "60"
+ [16] "70" NA   "60" "47" "70" "55" "70" "45" "70" "80" "45" "75" "70" "73" "58"
+ [31] "45" "60" "45" "60" "57" "45" "55" "65" "45" "75" "50" "50" "50" "70" NA  
+ [46] "70" "75" "60" "70" "56" NA   "70" "53" "56" "35" "40" "60" "70" "90" "40"
+ [61] "65" "65" "55" "45" "65" "60" NA   "60" "65" "70" "75" "40" "60" "40" "45"
+ [76] "70" NA   "65" "55" "50" "60" "70" "45" NA   NA   NA   "83" "60" "60" "50"
+ [91] "65" NA   "50" "60" "70" "85" "55" "70" NA   "60" "53" "60" "55" "70" "47"
+[106] "60" "40" "55" "40" "20" "50" "25" "46" "78" "55" "55" "60" "45" NA   NA  
+[121] "60" "35" "75" "60" "40"</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Regular expressions (Regex)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The default interpretation of the pattern argument is a regular expression. Because <code>+</code> is a special character in regex, we need to ‘escape’ it, so <code>str_remove</code> only interprets it as a plus symbol, and not its additional regex functionality. We can ‘escape’ symbols by prefixing them with <code>\\</code>.</p>
+<p>An alternative would have been to use <code>str_remove(renamed_data$Width, fixed("+"))</code>, which compares literal bytes instead of interpreting regex.</p>
+<p>See <code>vignette("regular-expressions")</code> for more details.</p>
+</div>
+</div>
+<p>We can incorporate this function into <code>mutate()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(renamed_data, <span class="at">Width =</span> <span class="fu">str_remove</span>(Width, <span class="st">"</span><span class="sc">\\</span><span class="st">+"</span>))<span class="sc">$</span>Width</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] "70" "60" "75" "82" "73" "50" "55" "60" "58" "70" "60" NA   "60" "45" "60"
+ [16] "70" NA   "60" "47" "70" "55" "70" "45" "70" "80" "45" "75" "70" "73" "58"
+ [31] "45" "60" "45" "60" "57" "45" "55" "65" "45" "75" "50" "50" "50" "70" NA  
+ [46] "70" "75" "60" "70" "56" NA   "70" "53" "56" "35" "40" "60" "70" "90" "40"
+ [61] "65" "65" "55" "45" "65" "60" NA   "60" "65" "70" "75" "40" "60" "40" "45"
+ [76] "70" NA   "65" "55" "50" "60" "70" "45" NA   NA   NA   "83" "60" "60" "50"
+ [91] "65" NA   "50" "60" "70" "85" "55" "70" NA   "60" "53" "60" "55" "70" "47"
+[106] "60" "40" "55" "40" "20" "50" "25" "46" "78" "55" "55" "60" "45" NA   NA  
+[121] "60" "35" "75" "60" "40"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># no need to subset Width from the data frame within str_remove()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>Length</code> variable requires exactly the same fix, so we can just repeat the same code with the <code>Length</code> variable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  renamed_data,</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Width =</span> <span class="fu">str_remove</span>(Width, <span class="st">"</span><span class="sc">\\</span><span class="st">+"</span>),</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Length =</span> <span class="fu">str_remove</span>(Length, <span class="st">"</span><span class="sc">\\</span><span class="st">+"</span>)</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 125 × 55
+   Layer ID    Burial_axis Degree_axis Condition Length Width Height Pit  
+   &lt;dbl&gt; &lt;chr&gt;       &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;
+ 1     1 0               1         290         3 115    70        NA P9   
+ 2     1 1               1         295         2 102    60        30 P051 
+ 3     1 2               1         290         2 104    75        60 P051 
+ 4     1 3               1         290         1 130    82        60 P050 
+ 5     1 4               1         300         2 140    73        30 P038 
+ 6     1 5               1         285         2 70     50        35 P050 
+ 7     1 6               1         310         3 85     55        13 P038 
+ 8     1 7               1         290         2 130    60        29 P028 
+ 9     1 8               1         295         2 100    58        15 P038 
+10     1 9               1         300         1 130    70        60 P052 
+# ℹ 115 more rows
+# ℹ 46 more variables: sampled &lt;chr&gt;, start_layer &lt;dbl&gt;, start_depth &lt;dbl&gt;,
+#   end_depth &lt;dbl&gt;, start_depth_sure &lt;chr&gt;, old_layer &lt;dbl&gt;, Phase &lt;chr&gt;,
+#   Coffin &lt;dbl&gt;, Straw_mat &lt;dbl&gt;, Gender &lt;dbl&gt;, Age &lt;chr&gt;, Agate_bead &lt;dbl&gt;,
+#   Golden_bead &lt;dbl&gt;, Glass_bead &lt;chr&gt;, IndoPacific_bead &lt;chr&gt;,
+#   Glass_earring &lt;dbl&gt;, Big_Metal_ring &lt;dbl&gt;, Small_Metal_ring &lt;dbl&gt;,
+#   Wide_Metal_ring &lt;dbl&gt;, Metal_ring &lt;dbl&gt;, Bell &lt;dbl&gt;, Knit &lt;lgl&gt;, …</code></pre>
+</div>
+</div>
+<p>Performing our cleaning operations with the pipe looks like this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>raw_data <span class="sc">|&gt;</span> <span class="co"># take our raw data, and then...</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Height =</span> Hight,</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">IndoPacific_bead =</span> <span class="st">`</span><span class="at">Indo-Pacific_bead</span><span class="st">`</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> <span class="co"># rename variables, and then...</span></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Glass_bead =</span> <span class="fu">if_else</span>( </span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">condition =</span> Glass_bead <span class="sc">==</span> <span class="st">"shatter"</span>,</span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">true =</span> <span class="cn">NA</span>,</span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">false =</span> Glass_bead</span>
+<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a>   ) <span class="sc">|&gt;</span> <span class="co"># mutate Glass_bead, and then...</span></span>
+<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">IndoPacific_bead =</span> <span class="fu">case_when</span>(</span>
+<span id="cb53-15"><a href="#cb53-15" aria-hidden="true" tabindex="-1"></a>      IndoPacific_bead <span class="sc">==</span> <span class="st">"cluster"</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb53-16"><a href="#cb53-16" aria-hidden="true" tabindex="-1"></a>      IndoPacific_bead <span class="sc">==</span> <span class="st">"unsure number"</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb53-17"><a href="#cb53-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">.default =</span> IndoPacific_bead</span>
+<span id="cb53-18"><a href="#cb53-18" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb53-19"><a href="#cb53-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> <span class="co"># mutate IndoPacific_bead, and then...</span></span>
+<span id="cb53-20"><a href="#cb53-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb53-21"><a href="#cb53-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">Width =</span> <span class="fu">str_remove</span>(Width, <span class="st">"</span><span class="sc">\\</span><span class="st">+"</span>),</span>
+<span id="cb53-22"><a href="#cb53-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">Length =</span> <span class="fu">str_remove</span>(Length, <span class="st">"</span><span class="sc">\\</span><span class="st">+"</span>)</span>
+<span id="cb53-23"><a href="#cb53-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="co"># mutate Width and Length</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 125 × 55
+   Layer ID    Burial_axis Degree_axis Condition Length Width Height Pit  
+   &lt;dbl&gt; &lt;chr&gt;       &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;
+ 1     1 0               1         290         3 115    70        NA P9   
+ 2     1 1               1         295         2 102    60        30 P051 
+ 3     1 2               1         290         2 104    75        60 P051 
+ 4     1 3               1         290         1 130    82        60 P050 
+ 5     1 4               1         300         2 140    73        30 P038 
+ 6     1 5               1         285         2 70     50        35 P050 
+ 7     1 6               1         310         3 85     55        13 P038 
+ 8     1 7               1         290         2 130    60        29 P028 
+ 9     1 8               1         295         2 100    58        15 P038 
+10     1 9               1         300         1 130    70        60 P052 
+# ℹ 115 more rows
+# ℹ 46 more variables: sampled &lt;chr&gt;, start_layer &lt;dbl&gt;, start_depth &lt;dbl&gt;,
+#   end_depth &lt;dbl&gt;, start_depth_sure &lt;chr&gt;, old_layer &lt;dbl&gt;, Phase &lt;chr&gt;,
+#   Coffin &lt;dbl&gt;, Straw_mat &lt;dbl&gt;, Gender &lt;dbl&gt;, Age &lt;chr&gt;, Agate_bead &lt;dbl&gt;,
+#   Golden_bead &lt;dbl&gt;, Glass_bead &lt;chr&gt;, IndoPacific_bead &lt;chr&gt;,
+#   Glass_earring &lt;dbl&gt;, Big_Metal_ring &lt;dbl&gt;, Small_Metal_ring &lt;dbl&gt;,
+#   Wide_Metal_ring &lt;dbl&gt;, Metal_ring &lt;dbl&gt;, Bell &lt;dbl&gt;, Knit &lt;lgl&gt;, …</code></pre>
+</div>
+</div>
+<p>Since all the steps use <code>mutate()</code> we don’t actually need the pipe. <code>mutate</code> can take multiple name-value pairs separated by a comma (<code>,</code>).</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  .data, </span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">new_column =</span> new_value, </span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">another_new_column =</span> another_new_value,</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">yet_another =</span> new_value3</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>raw_data <span class="sc">|&gt;</span> <span class="co"># take our raw data, and then</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Height =</span> Hight,</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">IndoPacific_bead =</span> <span class="st">`</span><span class="at">Indo-Pacific_bead</span><span class="st">`</span></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Glass_bead =</span> <span class="fu">if_else</span>( <span class="co"># mutate Glass_bead</span></span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">condition =</span> Glass_bead <span class="sc">==</span> <span class="st">"shatter"</span>,</span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">true =</span> <span class="cn">NA</span>,</span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">false =</span> Glass_bead</span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a>    ), <span class="co"># and then take the new data frame and pipe it to</span></span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">IndoPacific_bead =</span> <span class="fu">case_when</span>( <span class="co"># and Indo-Pacific_bead</span></span>
+<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a>      IndoPacific_bead <span class="sc">==</span> <span class="st">"cluster"</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a>      IndoPacific_bead <span class="sc">==</span> <span class="st">"unsure number"</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb56-15"><a href="#cb56-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">.default =</span> IndoPacific_bead</span>
+<span id="cb56-16"><a href="#cb56-16" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb56-17"><a href="#cb56-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">Width =</span> <span class="fu">str_remove</span>(Width, <span class="st">"</span><span class="sc">\\</span><span class="st">+"</span>),</span>
+<span id="cb56-18"><a href="#cb56-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">Length =</span> <span class="fu">str_remove</span>(Length, <span class="st">"</span><span class="sc">\\</span><span class="st">+"</span>)</span>
+<span id="cb56-19"><a href="#cb56-19" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 125 × 55
+   Layer ID    Burial_axis Degree_axis Condition Length Width Height Pit  
+   &lt;dbl&gt; &lt;chr&gt;       &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;
+ 1     1 0               1         290         3 115    70        NA P9   
+ 2     1 1               1         295         2 102    60        30 P051 
+ 3     1 2               1         290         2 104    75        60 P051 
+ 4     1 3               1         290         1 130    82        60 P050 
+ 5     1 4               1         300         2 140    73        30 P038 
+ 6     1 5               1         285         2 70     50        35 P050 
+ 7     1 6               1         310         3 85     55        13 P038 
+ 8     1 7               1         290         2 130    60        29 P028 
+ 9     1 8               1         295         2 100    58        15 P038 
+10     1 9               1         300         1 130    70        60 P052 
+# ℹ 115 more rows
+# ℹ 46 more variables: sampled &lt;chr&gt;, start_layer &lt;dbl&gt;, start_depth &lt;dbl&gt;,
+#   end_depth &lt;dbl&gt;, start_depth_sure &lt;chr&gt;, old_layer &lt;dbl&gt;, Phase &lt;chr&gt;,
+#   Coffin &lt;dbl&gt;, Straw_mat &lt;dbl&gt;, Gender &lt;dbl&gt;, Age &lt;chr&gt;, Agate_bead &lt;dbl&gt;,
+#   Golden_bead &lt;dbl&gt;, Glass_bead &lt;chr&gt;, IndoPacific_bead &lt;chr&gt;,
+#   Glass_earring &lt;dbl&gt;, Big_Metal_ring &lt;dbl&gt;, Small_Metal_ring &lt;dbl&gt;,
+#   Wide_Metal_ring &lt;dbl&gt;, Metal_ring &lt;dbl&gt;, Bell &lt;dbl&gt;, Knit &lt;lgl&gt;, …</code></pre>
+</div>
+</div>
+<p>What you may have noticed is that the variables are still character vectors (indicated by the quotations marks, <code>""</code> surrounding each value). What we have done in the above code is just remove all characters that could interfere with our conversion from character to numeric, but we still need to explicitly make the conversion using <code>as.numeric()</code>, a function that converts a value or a vector of values to numeric (assuming the values are all numbers or <code>TRUE</code>/<code>FALSE</code>).</p>
+<p>We could wrap <code>as.numeric()</code> around each mutate operation we have performed,</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>data_clean <span class="ot">&lt;-</span> raw_data <span class="sc">|&gt;</span> <span class="co"># take our raw data, and then</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Height =</span> Hight,</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">IndoPacific_bead =</span> <span class="st">`</span><span class="at">Indo-Pacific_bead</span><span class="st">`</span></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Glass_bead =</span> <span class="fu">is.numeric</span>(<span class="fu">if_else</span>( <span class="co"># mutate Glass_bead</span></span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">condition =</span> Glass_bead <span class="sc">==</span> <span class="st">"shatter"</span>,</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">true =</span> <span class="cn">NA</span>,</span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">false =</span> Glass_bead</span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>    )), <span class="co"># and then take the new data frame and pipe it to</span></span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">IndoPacific_bead =</span> <span class="fu">is.numeric</span>(<span class="fu">case_when</span>( <span class="co"># and Indo-Pacific_bead</span></span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>      IndoPacific_bead <span class="sc">==</span> <span class="st">"cluster"</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a>      IndoPacific_bead <span class="sc">==</span> <span class="st">"unsure number"</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb58-15"><a href="#cb58-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">.default =</span> IndoPacific_bead</span>
+<span id="cb58-16"><a href="#cb58-16" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb58-17"><a href="#cb58-17" aria-hidden="true" tabindex="-1"></a>  ) </span>
+<span id="cb58-18"><a href="#cb58-18" aria-hidden="true" tabindex="-1"></a>  ... etc.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>but a more efficient option would be to do it all at once. Enter <code>across()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>raw_data <span class="sc">|&gt;</span> <span class="co"># take our raw data, and then...</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Height =</span> Hight,</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">IndoPacific_bead =</span> <span class="st">`</span><span class="at">Indo-Pacific_bead</span><span class="st">`</span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> <span class="co"># rename variables, and then...</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Glass_bead =</span> <span class="fu">if_else</span>( </span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">condition =</span> Glass_bead <span class="sc">==</span> <span class="st">"shatter"</span>,</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">true =</span> <span class="cn">NA</span>,</span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">false =</span> Glass_bead</span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a>   ) <span class="sc">|&gt;</span> <span class="co"># mutate Glass_bead, and then...</span></span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">IndoPacific_bead =</span> <span class="fu">case_when</span>(</span>
+<span id="cb59-15"><a href="#cb59-15" aria-hidden="true" tabindex="-1"></a>      IndoPacific_bead <span class="sc">==</span> <span class="st">"cluster"</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb59-16"><a href="#cb59-16" aria-hidden="true" tabindex="-1"></a>      IndoPacific_bead <span class="sc">==</span> <span class="st">"unsure number"</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb59-17"><a href="#cb59-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">.default =</span> IndoPacific_bead</span>
+<span id="cb59-18"><a href="#cb59-18" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb59-19"><a href="#cb59-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> <span class="co"># mutate IndoPacific_bead, and then...</span></span>
+<span id="cb59-20"><a href="#cb59-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb59-21"><a href="#cb59-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">Width =</span> <span class="fu">str_remove</span>(Width, <span class="st">"</span><span class="sc">\\</span><span class="st">+"</span>),</span>
+<span id="cb59-22"><a href="#cb59-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">Length =</span> <span class="fu">str_remove</span>(Length, <span class="st">"</span><span class="sc">\\</span><span class="st">+"</span>)</span>
+<span id="cb59-23"><a href="#cb59-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> <span class="co"># mutate Width and Length</span></span>
+<span id="cb59-24"><a href="#cb59-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb59-25"><a href="#cb59-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(</span>
+<span id="cb59-26"><a href="#cb59-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">.cols =</span> <span class="fu">c</span>(Glass_bead, IndoPacific_bead, Width, Length),</span>
+<span id="cb59-27"><a href="#cb59-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">.fns =</span> as.numeric</span>
+<span id="cb59-28"><a href="#cb59-28" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb59-29"><a href="#cb59-29" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 125 × 55
+   Layer ID    Burial_axis Degree_axis Condition Length Width Height Pit  
+   &lt;dbl&gt; &lt;chr&gt;       &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;
+ 1     1 0               1         290         3    115    70     NA P9   
+ 2     1 1               1         295         2    102    60     30 P051 
+ 3     1 2               1         290         2    104    75     60 P051 
+ 4     1 3               1         290         1    130    82     60 P050 
+ 5     1 4               1         300         2    140    73     30 P038 
+ 6     1 5               1         285         2     70    50     35 P050 
+ 7     1 6               1         310         3     85    55     13 P038 
+ 8     1 7               1         290         2    130    60     29 P028 
+ 9     1 8               1         295         2    100    58     15 P038 
+10     1 9               1         300         1    130    70     60 P052 
+# ℹ 115 more rows
+# ℹ 46 more variables: sampled &lt;chr&gt;, start_layer &lt;dbl&gt;, start_depth &lt;dbl&gt;,
+#   end_depth &lt;dbl&gt;, start_depth_sure &lt;chr&gt;, old_layer &lt;dbl&gt;, Phase &lt;chr&gt;,
+#   Coffin &lt;dbl&gt;, Straw_mat &lt;dbl&gt;, Gender &lt;dbl&gt;, Age &lt;chr&gt;, Agate_bead &lt;dbl&gt;,
+#   Golden_bead &lt;dbl&gt;, Glass_bead &lt;dbl&gt;, IndoPacific_bead &lt;dbl&gt;,
+#   Glass_earring &lt;dbl&gt;, Big_Metal_ring &lt;dbl&gt;, Small_Metal_ring &lt;dbl&gt;,
+#   Wide_Metal_ring &lt;dbl&gt;, Metal_ring &lt;dbl&gt;, Bell &lt;dbl&gt;, Knit &lt;lgl&gt;, …</code></pre>
+</div>
+</div>
+<p>Across allows us to apply the same function <code>across</code> multiple columns of our choosing. We specify the columns we want to mutate in the <code>.cols</code> argument (combining them with <code>c()</code>), then the function we want to apply with the <code>.fns</code> argument. <code>across()</code> will be revisited in <a href="../docs/06_transforming-data.html#across">06 - Data Transformation</a>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Argument names with <code>.</code> in tidyverse
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>In many <strong>tidyverse</strong> functions you will see argument names starting with a dot, <code>.</code>, for example <code>.data</code> and <code>.cols</code>.</p>
+<p>This is because many <strong>tidyverse</strong> functions allow you to pass multiple variable names (like we did in <code>mutate</code>), which increases the risk that a variable name may conflict with an argument name (if the argument has the same name as a variable). By using a dot in front of the argument name, this reduces the risk of conflict (unless you really like putting dots at the start of your variable names - not recommended).</p>
+</div>
+</div>
+</div>
+<p>Now we just need to store the output in an object; we’ll call it <code>data_clean</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>data_clean <span class="ot">&lt;-</span> raw_data <span class="sc">|&gt;</span> <span class="co"># take our raw data, and then...</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Height =</span> Hight,</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">IndoPacific_bead =</span> <span class="st">`</span><span class="at">Indo-Pacific_bead</span><span class="st">`</span></span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> <span class="co"># rename variables, and then...</span></span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Glass_bead =</span> <span class="fu">if_else</span>( </span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">condition =</span> Glass_bead <span class="sc">==</span> <span class="st">"shatter"</span>,</span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">true =</span> <span class="cn">NA</span>,</span>
+<span id="cb61-10"><a href="#cb61-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">false =</span> Glass_bead</span>
+<span id="cb61-11"><a href="#cb61-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb61-12"><a href="#cb61-12" aria-hidden="true" tabindex="-1"></a>   ) <span class="sc">|&gt;</span> <span class="co"># mutate Glass_bead, and then...</span></span>
+<span id="cb61-13"><a href="#cb61-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb61-14"><a href="#cb61-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">IndoPacific_bead =</span> <span class="fu">case_when</span>(</span>
+<span id="cb61-15"><a href="#cb61-15" aria-hidden="true" tabindex="-1"></a>      IndoPacific_bead <span class="sc">==</span> <span class="st">"cluster"</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb61-16"><a href="#cb61-16" aria-hidden="true" tabindex="-1"></a>      IndoPacific_bead <span class="sc">==</span> <span class="st">"unsure number"</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb61-17"><a href="#cb61-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">.default =</span> IndoPacific_bead</span>
+<span id="cb61-18"><a href="#cb61-18" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb61-19"><a href="#cb61-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> <span class="co"># mutate IndoPacific_bead, and then...</span></span>
+<span id="cb61-20"><a href="#cb61-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb61-21"><a href="#cb61-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">Width =</span> <span class="fu">str_remove</span>(Width, <span class="st">"</span><span class="sc">\\</span><span class="st">+"</span>),</span>
+<span id="cb61-22"><a href="#cb61-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">Length =</span> <span class="fu">str_remove</span>(Length, <span class="st">"</span><span class="sc">\\</span><span class="st">+"</span>)</span>
+<span id="cb61-23"><a href="#cb61-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> <span class="co"># mutate Width and Length</span></span>
+<span id="cb61-24"><a href="#cb61-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb61-25"><a href="#cb61-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(</span>
+<span id="cb61-26"><a href="#cb61-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">.cols =</span> <span class="fu">c</span>(Glass_bead, IndoPacific_bead, Width, Length),</span>
+<span id="cb61-27"><a href="#cb61-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">.fns =</span> as.numeric</span>
+<span id="cb61-28"><a href="#cb61-28" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb61-29"><a href="#cb61-29" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>and then try the plot again.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>data_clean <span class="sc">|&gt;</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Width, <span class="at">y =</span> Height, <span class="at">col =</span> Phase)) <span class="sc">+</span></span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 14 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="04_cleaning-data_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Success!</p>
+</section>
+<section id="exporting-data" class="level2">
+<h2 class="anchored" data-anchor-id="exporting-data">Exporting data</h2>
+<p>Now that we have cleaned data it would be nice to save it, so we don’t have to go through the cleaning steps every time we want to use the data. We will be exporting to a <em>.csv</em> file, since this format is more <strong>interoperable</strong> than <em>.xlsx</em>.</p>
+<p>We will use <code>write_csv()</code> from the <span class="pkg">readr</span> package, which, you guessed it, is part of <strong>tidyverse</strong>. We will store the new file in the <em>data/</em> folder.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(data_clean, <span class="fu">here</span>(<span class="st">"data/mortuary_clean.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="finishing-up" class="level2">
+<h2 class="anchored" data-anchor-id="finishing-up">Finishing up</h2>
+<p>A note on reproducibility. We have a lot of objects in the Global Environment (see the Environment pane), and these will not be present in someone else’s Global Environment unless they are produced using the script. So a good test to see if the script runs as it should from a clean Environment is to clear our environment with <code>rm(list = ls())</code>, and then run the script.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Don’t be rude
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>It’s important when you are sharing code that your code is not invasive. <code>rm(list = ls())</code> is very invasive code because it clears the Global Environment of the user.</p>
+<p><strong>Do not</strong> include <code>rm(list = ls())</code> in a script that you are sharing with others (just don’t include it in a script. Period.) Or any other invasive code that modifies the users environment. Otherwise <a href="https://www.tidyverse.org/blog/2017/12/workflow-vs-script/">Jenny Bryan</a> will set your computer on fire.</p>
+<p><img src="../images/jenny-bryan-arson.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Another recommendation was also discussed in <a href="../docs/03_rstudio-project.html#a-final-note">03 - RStudio Projects</a>: to ensure reproducibility do not to save your workspace when you close RStudio (the default behaviour). To change the default setting, go to</p>
+<p>Tools &gt; Global Options… &gt; Workspace</p>
+<p>And make sure the option ‘Restore .RData into workspace at startup’ is <strong>not</strong> selected, and that ‘Save workspace to .RData on exit’ is set to ‘Never’.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/rchaeology\.github\.io\/RchaeoStats\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../docs/03_rstudio-project.html" class="pagination-link" aria-label="03 - Getting Organised">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">03 - Getting Organised</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../docs/05_visualising-data.html" class="pagination-link" aria-label="05 - Visualising Data">
+        <span class="nav-page-text">05 - Visualising Data</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

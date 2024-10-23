@@ -1,0 +1,9 @@
+[
+  {
+    "listing": "/slides/index.html",
+    "items": [
+      "/slides/content/00_welcome.html",
+      "/slides/content/01_rstudio-project.html"
+    ]
+  }
+]
