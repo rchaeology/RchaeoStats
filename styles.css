@@ -1,0 +1,35 @@
+/* css styles */
+
+kbd {
+    background-color: #eee;
+    border-radius: 3px;
+    border: 1px solid #b4b4b4;
+    box-shadow:
+      0 1px 1px rgba(0, 0, 0, 0.2),
+      0 2px 0 0 rgba(255, 255, 255, 0.7) inset;
+    color: #333;
+    display: inline-block;
+    font-size: 0.85em;
+    font-weight: 700;
+    line-height: 1;
+    padding: 2px 4px;
+    white-space: nowrap;
+  }
+
+.pkg {
+  font-weight: bold;
+}
+
+.pkg::before {
+  content: "\01F4E6";
+}
+
+.quarto-output {
+    border-left: solid 2.4pt #39729E;
+    margin: 10pt;
+}
+
+.quarto-output > p, .quarto-output > ul, .quarto-output > ol, .quarto-output > h2, .quarto-output > h1, .quarto-output > h3, .quarto-output > h4 {
+  margin-left: 1rem;
+  color: #6e6e6e;
+}

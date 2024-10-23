@@ -1,0 +1,27 @@
+/*-- scss:defaults --*/
+
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+$navy: #1f2241;
+$purple: #620637;
+$orange: #f06633;
+
+// document colours
+$body-bg: white;
+$sidebar-bg: $purple;
+$code-block-bg: #e3e3e7;
+$body-color: $navy;
+$link-color: $orange;
+
+//document typeface
+$font-family-sans-serif: "Atkinson Hyperlegible";
+
+/*-- scss:rules --*/
+
+.cell {
+    margin-bottom: 32px;
+}
+
+.sidebar-item {
+    color: white;
+}

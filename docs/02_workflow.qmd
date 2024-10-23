@@ -1,0 +1,565 @@
+---
+title: An Example Workflow
+---
+
+<!-- situated either before or after introducing RStudio Projects -->
+
+```{r}
+#| label: example-setup
+#| include: false
+
+library(ggplot2)
+library(dplyr)
+library(here)
+#mortuary_data <- readr::read_csv("https://edu.nl/hwgat")
+sheep_data <- readr::read_csv(here("data/sheep-data.csv"))
+```
+
+::: {.callout-tip collapse="true"}
+## Prerequisites
+
+#### Knowledge
+
+R Basics
+
+:::
+
+This is a quick example of a workflow working with data. It serves as a "carrot
+on a stick" that will hopefully get you through the more tedious parts of
+learning a programming language. If that doesn't work, here's a motivational
+penguin:
+
+![GIPHY](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcm0yd21kYmFlZjkyczNxeGNidjk5bTdtYWR6NjB0cXJpY3lwbTNvdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/OZbGrdp7FiDiE/giphy.gif)
+
+## Installing tidyverse
+
+The **tidyverse** is a collection of R packages that gives us an extensive toolkit for
+working with data, from importing to transforming and visualising.
+
+To install the tidyverse:
+
+```{r}
+#| label: install-tidyverse
+#| eval: false
+install.packages("tidyverse")
+```
+
+If you already installed **tidyverse**, doing this will just update
+the package.
+
+Now the package is installed on our system, we can load it with `library()`.
+In [R basics](/docs/01_r-basics.qmd) we only worked in the console, so we have
+no real overview
+of what we've done. You can see previous commands by pressing the up arrow
+<kbd>↑</kbd> on your keyboard, or look at the *.Rhistory* file, but a better way
+of keeping a record of the steps we take is by working in an R script.
+
+Create a new script
+
+    File > New File > R Script
+
+This will open a blank document. Here we can enter as many commands as we want to run.
+Pressing <kbd>Enter</kbd> will no longer run the command. Instead, you can run a command
+using <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Enter</kbd>. We can save the script (in *scripts/*) and
+load it any time we want to see what we've done so far.
+
+At the top of the script, load **tidyverse**.
+
+```{r}
+#| label: load-tidyverse
+#| eval: false
+library(tidyverse)
+```
+
+
+## Importing data
+
+Usually we would use the `read_csv()` function to import a local *.csv* file, but we can also give it a url (as long as it points to a *.csv* file).
+
+```{r}
+#| eval: false
+library(tidyverse)
+sheep_data <- read_csv("https://edu.nl/3hru6")
+```
+
+Barring any issues, we should now have the data available in R.
+A quick check with the `head()` function should allow us to see if
+anything went wrong.
+
+```{r}
+head(sheep_data) # first 6 rows of the data
+```
+
+The data are from the publication:
+
+>
+The contribution of Mediterranean connectivity to morphological variability in Iron Age sheep of the Eastern Mediterranean
+Sierra A. Harding, Angelos Hadjikoumis, Shyama Vermeersch, Roee Shafir, Nimrod Marom.
+bioRxiv 2022.12.24.521859; <https://doi.org/10.1101/2022.12.24.521859>
+
+::: {.callout collapse="true"}
+## Data dictionary
+
+{{< include /_data-dict-sheep.md >}}
+
+:::
+
+## Visualising the data with ggplot2
+
+First order of business is to explore the data set visually. To do that we will
+use the **ggplot2** package, which is part of **tidyverse**.
+
+For example, we could look at the relationship between the `GLl` and `Bd` measurements
+of the specimens.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+sheep_data |>
+  ggplot(aes(x = GLl, y = Bd)) +
+    geom_point(aes(col = Zone, shape = Zone), size = 2) +
+    geom_smooth(method = "lm") +
+    scale_colour_viridis_d(end = 0.8) +
+    theme_minimal() +
+    labs(
+      x = "Greatest lateral length",
+      y = "Breadth of distal end"
+    )
+```
+
+
+The anatomy of a standard ggplot is:
+
+```r
+ggplot(data = <data>, aes(<mappings>)) +
+    <geometric function> +
+    <customisations>
+```
+
+
+To start creating a plot, we use the `ggplot()` function and provide our data
+as the first argument.
+
+```{r}
+ggplot(data = sheep_data)
+```
+
+This gives us a blank canvas on which we can create our visual masterpiece. Right now,
+however, all `ggplot()` knows is that we want to create a plot with our data, but that's
+not enough information, and `ggplot()` isn't a mind-reader. We need to tell ggplot which
+variables we want to plot by providing the `mapping` to the `aes`thetics of the plot.
+
+```{r}
+ggplot(data = sheep_data, mapping = aes(x = GLl, y = Bd))
+```
+
+By providing the mapping, `ggplot()` now knows the bounds of the variables that
+we want to visualise, and can map the x and y aesthetics to our plot.
+Our code is pretty long, so to make it readable (to humans) we can expand it
+over multiple lines.
+
+```{r}
+#| eval: false
+ggplot(
+  data = sheep_data,
+  mapping = aes(x = GLl, y = Bd)
+)
+```
+
+Finally,
+we need to define a `geom`etrical object to represent our data. For a scatter plot
+the `geom` we need is `geom_point()`.
+
+```{r}
+ggplot(
+  data = sheep_data, 
+  mapping = aes(x = GLl, y = Bd)
+) +
+  geom_point()
+```
+
+Already we can see a relationship between the `GLl` and `Bd` of our sheep.
+
+
+### Adding aesthetics
+
+We can now already see that there is a positive relationship between the variables
+`GLl` and `Bd`. To take this relationship a step further, we can map a variable
+to colour.
+
+```{r}
+ggplot(
+  data = sheep_data,
+  mapping = aes(x = GLl, y = Bd, colour = Zone)
+) +
+  geom_point()
+```
+
+Now we can see the relationship (or lack thereof) in the measurements of sheep astragali
+between the Zones
+of occupation. To really drive home the relationship between the
+variables we can add a curve with `geom_smooth()`. We want to see the linear relationship
+so we will use `method = "lm"`.
+
+```{r}
+ggplot(
+  data = sheep_data,
+  aes(x = GLl, y = Bd, colour = Zone)
+) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+The confidence interval is making it kinda difficult to see the plot, so we can remove
+them with `se = FALSE`.
+
+```{r}
+ggplot(
+  data = sheep_data,
+  aes(x = GLl, y = Bd, colour = Zone)
+) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+Because we are providing the colour mapping in the `ggplot()`, all `geom`s inherit
+this value. If we just want to look at the overall relationship, we can move the
+colour mapping to `geom_point()`, which will allow us to keep the `Phase` colours
+and see the overall trendline for the data. We can reintroduce the confidence interval,
+too.
+
+```{r}
+ggplot(
+  data = sheep_data,
+  aes(x = GLl, y = Bd)
+) +
+  geom_point(aes(colour = Zone)) +
+  geom_smooth(method = "lm")
+```
+
+Now for some finishing touches. There are many reasons why only using colours to
+convey information is a bad idea. Think about colour perception, and that publishers
+charge you extra for colour printing. So let's make each `Phase` a different `shape`
+as well.
+
+```{r}
+ggplot(
+  data = sheep_data,
+  aes(x = GLl, y = Bd)
+) +
+  geom_point(aes(colour = Zone, shape = Zone)) +
+  geom_smooth(method = "lm")
+```
+
+Shapes can be resized using the `size` argument in the appropriate `geom`.
+**Note** we don't want the size to be linked to an aesthetic, so we add the
+argument outside of `aes()`.
+
+```{r}
+ggplot(
+  sheep_data,
+  aes(x = GLl, y = Bd)
+) +
+  geom_point(aes(colour = Zone, shape = Zone), size = 2) + # increase the size
+  geom_smooth(method = "lm")
+```
+
+Then for the finishing touch, a new background and new axis labels.
+
+```{r}
+ggplot(
+  sheep_data,
+  aes(x = GLl, y = Bd)
+) +
+  geom_point(
+    aes(colour = Zone, shape = Zone),
+    size = 2
+) +
+  geom_smooth(method = "lm") +
+  scale_colour_viridis_d(end = 0.8) +
+  theme_minimal() +
+  labs(
+    x = "Greatest lateral length",
+    y = "Breadth of distal end"
+  )
+```
+
+
+## Data Transformation with {dplyr}
+
+We can start working on our data frame to find additional relationships. This will
+largely be done with functions from the tidyverse package [dplyr]{.pkg}.
+
+### Transforming rows
+
+The main functions used to operate on rows of a data frame are:
+
+- `filter()`: filter rows based on a condition
+- `arrange()`: arrange rows by ascending or descending values
+
+Let's say we want to `filter` data that are related to the `Site` "KSN".
+
+```{r}
+filter(sheep_data, Site == "KSN")
+```
+
+Now say we're only interested in rows related to "KSN" and "ABM". That means we
+want to filter all rows where `Site` is "KSN" or "ABM".
+
+```{r}
+filter(
+  sheep_data,
+  Site == "KSN" | # or
+    Site == "ABM"
+)
+```
+
+Or, in other words, we want all rows where the value of `Site` is **not**
+"DOR".
+
+```{r}
+filtered_site <- filter(
+  sheep_data,
+  Site != "DOR"
+)
+```
+
+What's going on under the hood when we use filter, is the condition we create
+produces a Boolean vector that determines which rows should be kept.
+
+```{r}
+sheep_data$Site != "DOR"
+```
+
+Whenever a value is `TRUE`, that row will be retained, and whenever it is `FALSE`,
+that row will be removed.
+
+We can then arrange the data frame in ascending or descending order of `GLl`.
+
+```{r}
+arrange(filtered_site, GLl) # ascending
+arrange(filtered_site, desc(GLl)) # descending
+```
+
+### Transforming columns
+
+The most common functions for transforming columns are:
+
+- `mutate`
+- `select`
+
+The `mutate` function allows us to add variables. These can be variables with
+values that we define, or calculated from other variables. For example, we
+could create a variable containing the name of the dataset:
+
+```{r}
+mutate(filtered_site, dataset = "Sheep Astragali")
+```
+
+Considering we only have this dataset, it's not that informative. Instead, we
+could use the existing `GLl` and `Dl` variables to create a new variable
+containing the dimension index `Dl` and `GLl` of a specimen, and add it `.after`
+`Dl` in our data frame.
+
+```{r}
+dim_index <- mutate(
+  filtered_site,
+  Dl_GLl = Dl / GLl * 100, .after = Dl
+)
+```
+
+### Pipes
+
+We are starting to produce a lot of intermediate data frames, which will end up
+taking up memory. Not a lot in this case, but if we were working with a large
+dataset, it might not be insignificant.
+
+The pipe, `|>` is an operator that allows us to string together
+multiple functions/operations on the same data, without the need
+to use the data argument in each step, and without the need to
+create intermediate objects.
+
+::: {.callout-note collapse=true}
+## Choosing a pipe
+
+As of R version 4.1.0, there are now two pipe operators. The 'native'
+pipe, `|>` and the {magrittr} pipe, `%>%`. They are very similar but
+differ in some key areas. For more information, see
+[this blog post](https://www.r-bloggers.com/2022/01/understanding-the-native-r-pipe-2/)
+Here we will be using the native pipe since it doesn't require installing
+additional packages (although {magrittr} is part of the tidyverse and many
+packages import the magrittr pipe).
+:::
+
+To recreate the previous steps using the pipe:
+
+```{r}
+sheep_data |> # we take our data, and then
+  filter(Site != "DOR") |> # filter, and then
+  mutate(Dl_GLl = Dl / GLl * 100) # create a new variable
+```
+
+Think of the pipe as the phrase 'and then'.
+
+![GIPHY](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbjJyZzZ3d3I4ZWhoYm9xcWc4am5kbXMzb294ZG45bzloN2k2Z21jOSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/bzaEWi1Z1xzby/giphy.gif)
+
+First we take our data frame, and then we `filter()` on the `Site`
+variable, and then we take the output (the data frame we originally
+called `filtered_site`) from that operation
+and pipe it to `.data` argument in the next `mutate()` operation to create the
+new variable `Dl_GLl`. The output of these operations is the same as the `dim_index`
+data frame.
+
+The `select()` function allows us to... well, select columns of the data frame
+that we want to keep (or not keep). We do this by providing the name(s) of the
+column(s) we want to select.
+
+```{r}
+select(sheep_data, specID, Site, GLl, Dl)
+```
+
+We could also use the position of the columns:
+
+```{r}
+select(sheep_data, 1, 3, 7, 9)
+```
+
+Negating columns we don't want is possible, and may sometimes be the easier option.
+
+```{r}
+select(sheep_data, !c(Taxon, Zone, Period, group, Bd))
+```
+
+::: {.callout-warning}
+```r
+select(sheep_data, !Taxon, !Zone, !Period, !group, !Bd)
+```
+
+will not work as expected.
+
+:::
+
+Let's create a new, reduced data frame with the previous operations, and add an additional
+variable with a dimension index for `Bd` and `Dl`.
+
+```{r}
+dimension_data <- sheep_data |>
+  filter(Site != "DOR") |>
+  select(specID, Site, GLl, Bd, Dl) |>
+  mutate(
+    Dl_GLl = Dl / GLl * 100,
+    Bd_Dl = Bd / Dl * 100
+    )
+```
+
+### Grouping and summarising data
+
+In many situations you'll want to summarise data and calculate summary statistics
+for different groups. The [dplyr]{.pkg} functions `summarise`/`summarize` and `group_by`
+will help you do that.
+
+```{r}
+dimension_data |>
+  group_by(Site)
+```
+
+::: {.callout-caution}
+## Linebreaks
+
+You can't just create a linebreak anywhere in your code. It should
+come after certain operators and symbols. It should come after the
+`+` symbol in a ggplot and after a pipe. The following will not work:
+
+```{r}
+#| label: bad-linebreak
+#| eval: false
+dimension_data 
+|>  group_by(Zone)
+```
+
+:::
+
+You will likely not have noticed any difference in this data frame, but if you
+look at the top where the description is, you will see that it is now
+`A tibble: 107 x 7` with `Groups: Site [2]`. This means that the tibble (or data
+frame) is grouped by the variable `Site` which has two groupings.
+
+Once a data frame is grouped, we can perform specific operations on those groups,
+like calculating summary statistics.
+
+```{r}
+dimension_data |>
+  group_by(Site) |>
+  summarise(
+    mean_Dl_GLl = mean(Dl_GLl)
+  )
+```
+
+This calculates the mean area for each group. We can add multiple arguments to
+`summarise()` to get the `s`tandard `d`eviation and `n`umber of rows in each
+group:
+
+```{r}
+dimension_data |>
+  group_by(Site) |>
+  summarise(
+    n = n(),
+    mean_Dl_GLl = mean(Dl_GLl),
+    sd_DL_GLl = sd(Dl_GLl)
+  )
+```
+
+We can also visualise this with a box plot.
+
+```{r}
+dimension_data |>
+  ggplot(aes(x = Site, y = Dl_GLl)) +
+    geom_boxplot()
+```
+
+Box plots are notorious for hiding the distribution of data, so let's add a violin plot
+with `geom_violin()` **behind** the box plots. If you're lucky, sometimes the violin plots
+will look like pots. If you're even luckier, the pot-like plots will be of data from actual pots!
+
+```{r}
+dimension_data |>
+  ggplot(aes(x = Site, y = Dl_GLl)) +
+    geom_violin() + # will be displayed behind the box plots
+    geom_boxplot()    
+```
+
+The box plots are a little big, making it hard to see the violin plots behind them.
+We can use the `width` argument to adjust the width of the boxes.
+
+```{r}
+dimension_data |>
+  ggplot(aes(x = Site, y = Dl_GLl)) +
+    geom_violin() +
+    geom_boxplot(width = 0.2)
+```
+
+Add some colour to the violins to contrast the two plot types, and change the background,
+
+```{r}
+dimension_data |>
+  ggplot(aes(x = Site, y = Dl_GLl)) +
+    geom_violin(aes(fill = Site)) +
+    geom_boxplot(width = 0.2) +
+    theme_bw() +
+    theme(legend.position = "none") # and remove the redundant legend
+```
+
+et violà!
+
+This masterpiece should be saved.
+
+```{r}
+#| eval: false
+ggsave("figures/my-first-plot.png")
+```
+
+This is a pretty idealised situation where the data are in a useable format. Real
+world data are rarely this easy to work with. I also removed the missing data
+from the example dataset. Hardly representative of a real-world archaeological
+dataset...

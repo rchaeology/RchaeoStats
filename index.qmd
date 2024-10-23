@@ -1,0 +1,70 @@
+---
+title: "R and Statistics for Archaeologists"
+format: 
+  html: 
+    toc: true
+    toc-location: right
+---
+
+## Course overview
+
+The teaching materials on this site are intended for teaching Statistics and R programming workshops
+to archaeologists.
+
+This course follows the [tidyverse philosophy](https://r4ds.hadley.nz/intro#what-you-will-learn)
+of understanding and analysing your data through a repeated cycle of transforming,
+visualising, and modelling.
+
+![Image taken from the [R4DS book](http://r4ds.hadley.nz/)](images/base.png)
+
+Upcoming and past workshops can be found here:
+
+
+## Course modules
+
+The course contains multiple modules that can be used to construct
+workshops of varying durations and customised to suit the participants' needs.
+
+### Core
+
+The core module contains an introduction to R and RStudio, an example workflow, and
+data import and cleaning.
+
+| Component | Description | Materials | Duration |
+|----|----|----|----|
+| Setup | Installation of R and RStudio | [00 - Getting Started](/docs/00_install-r-rstudio.qmd) | Unknown |
+| R Basics | | Code-along: [01 - R Basics](/docs/01_r-basics.qmd) | Unknown |
+| Example workflow | | Code-along: [02 - An Example Workflow](/docs/02_workflow.qmd) | ~1 hour |
+| Project organisation | A brief discussion of how to organise a project with RStudio Projects. | Code-along: [03 - Getting Organised](/docs/03_rstudio-project.qmd) <br> Slides: [01 - RStudio Projects](/slides/content/01_rstudio-project.qmd) | ~10 mins |
+| Cleaning Data | Importing and cleaning data from a *.xlsx* file. | Code-along: [04 - Cleaning Data](/docs/04_cleaning-data.qmd) | Unknown |
+
+### Exploratory Data Analysis
+
+| Component | Description | Materials | Duration |
+|----|----|----|----|
+| Visualising Data | Visualising the cleaned data with [ggplot2]{.pkg}  | Code-along: [05 - Visualising Data](/docs/05_visualising-data.qmd) | Unknown |
+| Transforming Data | Transforming the cleaned data with [dplyr]{.pkg}  | Code-along: [06 - Transforming Data](/docs/06_transforming-data.qmd) | Unknown |
+
+### Extensions
+
+| Component | Description | Materials | Duration |
+|----|----|----|----|
+| Communicating Results | Creating a Quarto document to combine narrative and code with output  | Code-along: [08 - Communicating Results](/docs/08_communicating-results.qmd) | ~90 mins |
+
+
+Future work is planned on the following modules (help needed!):
+
+- Collaborative coding with Git(Hub)
+- Reproducible Research
+- Topic-specific modules
+  + Skeletal age-at-death and sex estimation
+  + Radiocarbon dating
+  + Dendrochronology
+  + etc.
+
+
+## Course outcomes
+
+Understand enough to explore more on your own and be able to solve the
+issues you run into. Because you will run into issues. Everyone runs into issues.
+It's VERY satisfying once you have solved them, though.

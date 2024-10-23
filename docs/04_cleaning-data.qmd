@@ -1,0 +1,760 @@
+---
+title: Cleaning data with tidyverse
+---
+
+```{r}
+#| label: clean-setup
+#| include: false
+
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(readxl)
+library(here)
+library(stringr)
+raw_data <- read_xlsx(here("data/mortuary-data.xlsx"))
+mortuary_data <- read_csv(here("data/04_clean-example-data.csv"))
+```
+
+::: {.callout-tip collapse="true"}
+## Prerequisites
+
+#### Knowledge
+
+R basics + Example workflow + Project organisation
+
+#### Objects
+
+Project organisation
+
+:::
+
+Data cleaning often takes up a large portion of an analysis, especially if the raw
+data were not collected with the intention to analyse the data in R.
+
+If the raw data are collected with [tidy data principles]() in mind (discussed briefly in
+[EDA: Transforming data with tidyverse](/docs/06_transforming-data.qmd#tidy-data)),
+this will greatly reduce the steps needed to clean the data, and allow you to move
+quickly on to the more fun visualisations and modelling. That being said, cleaning data
+serves as a nice learning tool to introduce various concepts of the R programming language.
+
+
+## Downloading data
+
+The dataset from [An Example Workflow](/docs/02_workflow.qmd) was already cleaned
+and in *.csv* format, which is why we were able to read it directly into R using
+`read_csv()` and the url. This is not the case with for the *.xlsx* file we will be working with
+here, and the `read_xlsx()` function we will use does not work with a url as the path
+to the file.
+
+We could go to the site, download it manually, and place it in the *data-raw/*
+folder; but, in the interest of reproducibility, we will create a script to download and clean the data.
+
+Create a new R script called *mortuary_data.R*, and save it in
+*data-raw/*. We can then use the `download.file()` function to
+download the dataset using the url for the xlsx download:
+<https://edu.nl/x4bqv>.
+
+We will also load **tidyverse** and [here]{.pkg} at the top of the script.
+
+```{r}
+#| label: download-data
+#| eval: false
+
+library(tidyverse)
+library(here)
+
+xlsx_url <- "https://edu.nl/x4bqv"
+download.file(url = xlsx_url, destfile = "data-raw/mortuary-data.xlsx", mode = "wb")
+```
+
+Run the code and we should see a file called *mortuary-data.xlsx* in the
+*data-raw/* folder.
+
+::: {.callout-important}
+There is **NO** reason to edit any of the files in the *data-raw* folder manually.
+
+Raw data should not be modified, and derived data are produced from the
+analysis script, so they also shouldn't be edited manually.
+:::
+
+::: {#data-dict .callout-note collapse="true"}
+## Data dictionary
+
+{{< include /_data-dict-mortuary.md >}}
+:::
+
+## Importing data
+
+To import a *.xlsx* file, we will need to use the [readxl]{.pkg} package, which is part of
+the **tidyverse**.
+From the [readxl]{.pkg} package, we need the function `read_xlsx()`. This allows us to import
+data from a *.xlsx* file. We will use the `here()` function to
+ensure our filepath is relative to the project root.
+
+We also need to assign it to an object using the assignment operator,
+`<-` to store the data in memory.
+
+
+```{r}
+#| label: clean-user-setup
+#| eval: false
+
+raw_data <- read_xlsx(path = here("data-raw/mortuary-data.xlsx"))
+```
+
+::: {.callout-tip}
+## Organising your script
+
+It's a good idea to organise your script, so you (or someone else) can easily
+read it at a later point. One useful way of organising a script
+is by adding headers.
+
+Code > Insert Section...
+
+or [Ctrl]{.kbd} + [Shift]{.kbd} + [R]{.kbd}
+:::
+
+The `raw_data` object we have created is a **tibble**, which is a structure for tabulated data
+specific to **tidyverse**. It is a **tibble** because we used the `read_xlsx()` function
+from the [readxl]{.pkg} package, which is part of **tidyverse**. If we had used a base R
+function like `read.csv()`, we would have created a **data frame**.
+Base R does not have a function to import *.xlsx* files, though, so we needed an
+additional package for that. **Tibbles** and **data frames** are largely interchangeable.
+
+The main thing you need to know is where you are storing
+the data file. Ideally, this will be in a folder in the root of
+your project called `data`. We have made two separate folders (*data/* and *data-raw/*)
+to distinguish between raw and processed data.
+
+Let's try to plot the `Height` and `Weight` of the burials and group
+by `Phase`.
+
+```{r}
+#| eval: false
+raw_data |>
+  ggplot(aes(x = Width, y = Height, col = Phase)) +
+    geom_point()
+```
+
+```{r}
+#| echo: false
+#| eval: false
+try(
+ggplot(raw_data, aes(x = Width, y = Height, col = Phase)) +
+  geom_point()
+)
+```
+
+We get the error `object 'Height' not found`.
+
+::: {.callout-tip}
+## Console messages
+
+There are three types of console messages that you will frequently encounter:
+**messages**, **warnings**, and **errors**.
+
+[**Messages**]{style="color: blue;"} are just helpful messages to give you some extra information
+about the code you just ran.
+
+[**Warnings**]{style="color: orange;"} are messages that tell you that, while your code did run
+successfully, there may have been some problems with the output that
+you should double check.
+
+[**Errors**]{style="color: red;"} mean your code did not run successfully.
+:::
+
+Weird... There should be a variable called `Height`. Let's take a look:
+
+```{r}
+names(raw_data)
+```
+
+It looks like there's a typo in the `Height` variable. Easy fix:
+
+```{r}
+raw_data |>
+  ggplot(aes(x = Width, y = Hight, col = Phase)) + # change to Hight
+    geom_point()
+```
+
+We are creating a plot, but something is not quite right. This is
+what we're after:
+
+```{r}
+#| echo: false
+mortuary_data |>
+  ggplot(aes(x = Width, y = Height, col = Phase)) +
+    geom_point()
+```
+
+::: {.callout}
+## Exercise
+
+Spot the problem(s) with the plot.
+
+::: {.callout collapse="true"}
+## Solution
+
+The `Width` variable is being treated as a categorical variable.
+This can be seen on the x-axis as well as the fact that we are
+unable to calculate the regression line.
+
+There are also a number of `NA`s in both the `Hight` and `Phase`
+variables, which indicate missing values.
+:::
+:::
+
+It looks like we need to take a closer look at the data.
+
+```{r}
+str(raw_data)
+```
+
+::: {.callout-tip}
+## Other useful functions
+
+Some useful functions to get a quick look at the data
+are:
+
+- `view()` view the whole dataset (opens new tab)
+- `head()` see the first 6 rows
+- `tail()` see the last 6 rows
+- `str()` see the **str**ucture of the data
+- `names()` see the column **names**
+- `dim()` get the **dim**ensions of the data (row number and column number)
+- `nrow()` get the **n**umber of **row**s
+- `ncol()` get the **n**umber of **col**umns
+
+:::
+
+It looks like there are a couple of variables that should be numeric (num) are actually character (chr). We also have the typo we found before, `Hight` and a violation of the R naming rules, `Indo-Pacific_bead`.
+
+## Renaming variables
+
+It would be best to fix the variable names
+right away to prevent mistakes when using them in future operations where we will
+intuitively want to type `Height`.
+
+There are certain rules for naming objects in R. Names should:
+
+- contain only alphanumeric characters, underscores, `_`, and decimal points, `.`
+- start with a letter
+- not interfere with other R objects (this will take some experience)
+
+And then there are further recommendations:
+
+- use nouns for objects
+- use verbs for functions
+- keep them short, but explanatory (e.g., `mean_height`, not `x`)
+
+Since `Indo-Pacific_bead` contains a hyphen, `-`, whenever we want to use the
+variable we would have to wrap it in backticks, ````. This is true for all
+variables containing special characters.
+To fix this we can `rename` the variables. The `rename()` function syntax
+is `rename(data, <new_name> = <old_name>)`.
+
+```{r}
+renamed_data <- raw_data |>
+  rename(
+    Height = Hight,
+    IndoPacific_bead = `Indo-Pacific_bead`,
+  )
+```
+
+
+## Data types
+
+Some variables that we might expect to be numeric, are coming up as
+character. We can take a closer look at the values by indexing the column with
+the dollar symbol, `$`:
+
+```{r}
+raw_data$Length
+raw_data$Age
+raw_data$`Indo-Pacific_bead`
+```
+
+It's also possible to index a column using the name of the column,
+
+```{r}
+raw_data["Length"]
+```
+
+or the position. Because a data frame is two-dimensional, the position
+needs two values, the row number(s) and column number(s), respectively.
+To index all rows, leave it blank.
+
+```{r}
+raw_data[,6] # all rows, column 6
+```
+
+::: {.callout-note}
+
+As you may have noticed, indexing with `$` produces a vector, and `["name"]`
+and `[row,col]` produce a tibble/data frame.
+
+To extract a column as a vector using name and position, use double
+brackets: `[["name"]]` and `[[col]]`.
+
+:::
+
+It looks like some characters were used in the columns, which means
+that the columns could not be imported as numeric.
+This is because R can only have one type in a column.
+For example, there is a value in `Glass_bead` called 'shatter'.
+Since a vector,
+or column in a data frame, can only contain one type, R imported
+the many of our columns as character.
+
+There are three main `class`es of values that we are going to use.
+
+| Class | Description |
+|----|----|
+| character | Strings of any kind ("word", "multiple words", "jka9qy0") |
+| logical | Boolean type (`TRUE`, `FALSE`) and `NA` |
+| numeric | Numeric values (1, 2, 3.4, etc.) |
+
+::: {.callout}
+## Exercise
+
+Create the following vectors
+
+```{r}
+num_char <- c(1, 2, 3, "a")
+num_logical <- c(1, 2, 3, TRUE)
+char_logical <- c("a", "b", "c", TRUE)
+tricky <- c(1, 2, 3, "4")
+```
+
+and see what `typeof` object they are or what `class`
+they are, and see if you can figure out why they are
+what they are.
+
+::: {.callout collapse="true"}
+## Solution
+
+```{r}
+typeof(num_char)
+typeof(num_logical)
+typeof(char_logical)
+typeof(tricky)
+```
+
+The conversion sequence in R is character < double < integer < logical.
+
+Logical can be converted to numeric (`TRUE` becomes 1, and `FALSE`
+becomes 0), and numeric can be converted to a string (3 becomes "3"),
+but a string cannot be converted to numeric or logical (what would
+"glass" be as a number?). Number strings, e.g., "3", can be
+converted back to a numeric.
+
+```{r}
+as.numeric(c("1", "2", "3"))
+```
+
+But any non-numbers will be replaced with `NA`.
+Luckily R warns you about this.
+
+```{r}
+as.numeric(c("1", "2", "three"))
+```
+
+:::
+
+:::
+
+
+## Modifying variables with `mutate()`
+
+We need to modify the `Glass_bead` variable to numeric.
+That means we need to decide what to do with 'shatter'.
+We could change it to `NA`, or assume that it represents at least one, and
+change it to 1. We can do this with the `mutate()` and `if_else()`
+functions.
+
+![Allison Horst](https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/bd4ae264-ae51-4d18-bd60-7a058ab42fba_rw_1920.png?h=a3757d1f46f418c59e7e7946d026344e){fig-alt='Cartoon of cute fuzzy monsters dressed up as different X-men characters, working together to add a new column to an existing data frame. Stylized title text reads “dplyr::mutate - add columns, keep existing.” Learn more about dplyr::mutate.'}
+
+`mutate` requires a data frame as the first argument (`.data`) and then
+name-value pairs, where the name will be the new column name and the value
+the new value(s) of the column.
+
+```r
+mutate(data, new_column = new_value)
+```
+
+Instead of a single value we can use a function or equation to calculate
+a new variable. And instead of creating a new variable, we can provide the
+name of an existing column instead of using a new name. There are a few common
+issues with multiple variables that we can fix.
+
+For example, to modify the `Glass_bead` variable, we can combine `mutate`
+and `if_else` functions to determine what the new values should be based
+on whether a value matches a certain condition.
+
+```{r}
+mutate(
+  renamed_data,                          # the data
+  Glass_bead = if_else(                  # the new/existing variable and function
+    condition = Glass_bead == "shatter", # the condition
+    true = NA,                           # the new value for matches
+    false = Glass_bead                   # the new value for non-matches
+  )
+) 
+```
+
+
+`if_else()` requires three main arguments: (1) the condition to evaluate,
+(2) the new value for all the values that match the condition, and
+(3) the new value for all the values that don't match the condition.
+The condition therefore needs to produce a Boolean vector. In our case
+this is produced by `Glass_bead == "shatter"`, which we can check by
+running
+
+```{r}
+renamed_data$Glass_bead == "shatter"
+```
+
+In each instance where the value is `TRUE`, the value is changed to
+`NA` (`true = NA`) and in each instance where the value is `FALSE`,
+it stays the same as the original variable (`false = Glass_bead`).
+
+We can also use this Boolean vector to index our `Glass_bead` column.
+
+```{r}
+renamed_data$Glass_bead[renamed_data$Glass_bead == "shatter"]
+```
+
+Reading from the inside out, the code within the square brackets
+produces a Boolean vector where all entries with 'shatter' are
+`TRUE` and all other values are `FALSE`. When you use a Boolean
+vector to index another vector, it will 'show' all values that
+are `TRUE` and remove all values that coincide with a `FALSE`
+value.
+
+We can then modify the variable by assigning a new value to the
+indexed values.
+
+```{r}
+renamed_data$Glass_bead[renamed_data$Glass_bead == "shatter"] <- NA
+```
+
+Which produces the same outcome as the `if_else()` and `mutate()`
+functions.
+
+This also means that `if_else()` is limited to a single condition
+producing two new values. It wouldn't work to fix `IndoPacific_bead`.
+At least not without introducing additional functions and some unnecessary
+code gymnastics (which I'm avoiding to keep the examples somewhat simple).
+
+`case_when()` allows us to introduce multiple conditions, and works in
+a similar way to `if_else()`. It takes a condition on the left-hand side (LHS),
+and a value on the right-hand side (RHS), and a `.default` value for any
+values that don't satisfy any of the provided conditions.
+
+```r
+case_when(condition ~ value, .default = value)
+```
+
+```{r}
+mutate(
+  renamed_data,
+  IndoPacicific_bead = case_when(
+    IndoPacific_bead == "cluster" ~ NA,       # first condition, LHS ~ RHS
+    IndoPacific_bead == "unsure number" ~ NA, # second condition, LHS ~ RHS
+    .default = IndoPacific_bead               # for non-matches
+  ) 
+)
+```
+
+## Modifying strings with stringr
+
+Next on our cleaning list are `Width` and `Length`. These were
+imported as character because of the plus symbol (`+`) in some of the
+variables, presumably indicating a measurement 'or greater'.
+To fix this, we will just remove the symbol and keep the value
+(nevermind if this might not be ideal from an analytical perspective...).
+
+We will use the [stringr]{.pkg} package to work with characters, which, conveniently
+is also part of **tidyverse** (it's like they know what functionality we
+need to clean our data...)
+Since we're interested in removing a character, we can use the `str_remove()` function,
+which takes a character vector as the first, and a pattern as the second argument. 
+
+```{r}
+str_remove(renamed_data$Width, "\\+")
+```
+
+::: {.callout-note}
+## Regular expressions (Regex)
+
+The default interpretation of the pattern argument is a regular expression.
+Because `+` is a special character in regex, we need to 'escape' it,
+so `str_remove` only interprets it as a plus symbol, and not its
+additional regex functionality. We can 'escape' symbols by prefixing
+them with `\\`.
+
+An alternative would have been to use `str_remove(renamed_data$Width, fixed("+"))`,
+which compares literal bytes instead of interpreting regex.
+
+See `vignette("regular-expressions")` for more details.
+:::
+
+We can incorporate this function into `mutate()`.
+
+```{r}
+mutate(renamed_data, Width = str_remove(Width, "\\+"))$Width
+# no need to subset Width from the data frame within str_remove()
+```
+
+The `Length` variable requires exactly the same fix, so we can
+just repeat the same code with the `Length` variable.
+
+```{r}
+mutate(
+  renamed_data,
+  Width = str_remove(Width, "\\+"),
+  Length = str_remove(Length, "\\+")
+)
+```
+
+
+Performing our cleaning operations with the pipe looks like this:
+
+```{r}
+raw_data |> # take our raw data, and then...
+  rename(
+    Height = Hight,
+    IndoPacific_bead = `Indo-Pacific_bead`
+  ) |> # rename variables, and then...
+  mutate(
+    Glass_bead = if_else( 
+      condition = Glass_bead == "shatter",
+      true = NA,
+      false = Glass_bead
+    )
+   ) |> # mutate Glass_bead, and then...
+  mutate(
+    IndoPacific_bead = case_when(
+      IndoPacific_bead == "cluster" ~ NA,
+      IndoPacific_bead == "unsure number" ~ NA,
+      .default = IndoPacific_bead
+    )
+  ) |> # mutate IndoPacific_bead, and then...
+  mutate(
+    Width = str_remove(Width, "\\+"),
+    Length = str_remove(Length, "\\+")
+  ) # mutate Width and Length
+```
+
+Since all the steps use `mutate()` we don't actually need the pipe.
+`mutate` can take multiple name-value pairs separated by a comma (`,`).
+
+```r
+mutate(
+  .data, 
+  new_column = new_value, 
+  another_new_column = another_new_value,
+  yet_another = new_value3
+)
+```
+
+```{r}
+raw_data |> # take our raw data, and then
+  rename(
+    Height = Hight,
+    IndoPacific_bead = `Indo-Pacific_bead`
+  ) |>
+  mutate(
+    Glass_bead = if_else( # mutate Glass_bead
+      condition = Glass_bead == "shatter",
+      true = NA,
+      false = Glass_bead
+    ), # and then take the new data frame and pipe it to
+    IndoPacific_bead = case_when( # and Indo-Pacific_bead
+      IndoPacific_bead == "cluster" ~ NA,
+      IndoPacific_bead == "unsure number" ~ NA,
+      .default = IndoPacific_bead
+    ),
+    Width = str_remove(Width, "\\+"),
+    Length = str_remove(Length, "\\+")
+  )
+```
+
+
+What you may have noticed is that the variables are still character vectors (indicated by the quotations marks,
+`""` surrounding each value). What we have done in the above code is just remove all characters
+that could interfere with our conversion from character to numeric, but we still need to explicitly
+make the conversion using `as.numeric()`, a function that converts a value or a vector of values to numeric
+(assuming the values are all numbers or `TRUE`/`FALSE`).
+
+We could wrap `as.numeric()` around each mutate operation we have performed,
+
+```r
+data_clean <- raw_data |> # take our raw data, and then
+  rename(
+    Height = Hight,
+    IndoPacific_bead = `Indo-Pacific_bead`
+  ) |>
+  mutate(
+    Glass_bead = is.numeric(if_else( # mutate Glass_bead
+      condition = Glass_bead == "shatter",
+      true = NA,
+      false = Glass_bead
+    )), # and then take the new data frame and pipe it to
+    IndoPacific_bead = is.numeric(case_when( # and Indo-Pacific_bead
+      IndoPacific_bead == "cluster" ~ NA,
+      IndoPacific_bead == "unsure number" ~ NA,
+      .default = IndoPacific_bead
+    ))
+  ) 
+  ... etc.
+```
+
+but a more efficient option would be to do it all at once. Enter `across()`.
+
+```{r}
+raw_data |> # take our raw data, and then...
+  rename(
+    Height = Hight,
+    IndoPacific_bead = `Indo-Pacific_bead`
+  ) |> # rename variables, and then...
+  mutate(
+    Glass_bead = if_else( 
+      condition = Glass_bead == "shatter",
+      true = NA,
+      false = Glass_bead
+    )
+   ) |> # mutate Glass_bead, and then...
+  mutate(
+    IndoPacific_bead = case_when(
+      IndoPacific_bead == "cluster" ~ NA,
+      IndoPacific_bead == "unsure number" ~ NA,
+      .default = IndoPacific_bead
+    )
+  ) |> # mutate IndoPacific_bead, and then...
+  mutate(
+    Width = str_remove(Width, "\\+"),
+    Length = str_remove(Length, "\\+")
+  ) |> # mutate Width and Length
+  mutate(
+    across(
+      .cols = c(Glass_bead, IndoPacific_bead, Width, Length),
+      .fns = as.numeric
+    )
+  )
+```
+
+Across allows us to apply the same function `across` multiple columns of our choosing. We specify the columns we want to mutate in the `.cols` argument (combining them with `c()`),
+then the function we want to apply with the `.fns` argument. `across()` will be revisited in [06 - Data Transformation](/docs/06_transforming-data.qmd#across).
+
+::: {.callout-note collapse="true"}
+## Argument names with `.` in tidyverse
+
+In many **tidyverse** functions you will see argument names starting with a dot, `.`,
+for example `.data` and `.cols`.
+
+This is because many **tidyverse** functions allow you to pass multiple variable names
+(like we did in `mutate`), which increases the risk that a variable name may conflict with
+an argument name (if the argument has the same name as a variable).
+By using a dot in front of the
+argument name, this reduces the risk of conflict (unless you really like putting dots at the start
+of your variable names - not recommended).
+:::
+
+Now we just need to store the output in an object; we'll call it `data_clean`
+
+```{r}
+data_clean <- raw_data |> # take our raw data, and then...
+  rename(
+    Height = Hight,
+    IndoPacific_bead = `Indo-Pacific_bead`
+  ) |> # rename variables, and then...
+  mutate(
+    Glass_bead = if_else( 
+      condition = Glass_bead == "shatter",
+      true = NA,
+      false = Glass_bead
+    )
+   ) |> # mutate Glass_bead, and then...
+  mutate(
+    IndoPacific_bead = case_when(
+      IndoPacific_bead == "cluster" ~ NA,
+      IndoPacific_bead == "unsure number" ~ NA,
+      .default = IndoPacific_bead
+    )
+  ) |> # mutate IndoPacific_bead, and then...
+  mutate(
+    Width = str_remove(Width, "\\+"),
+    Length = str_remove(Length, "\\+")
+  ) |> # mutate Width and Length
+  mutate(
+    across(
+      .cols = c(Glass_bead, IndoPacific_bead, Width, Length),
+      .fns = as.numeric
+    )
+  )
+```
+
+and then try the plot again.
+
+```{r}
+data_clean |>
+  ggplot(aes(x = Width, y = Height, col = Phase)) +
+    geom_point()
+```
+
+Success!
+
+
+## Exporting data
+
+Now that we have cleaned data it would be nice to save it, so we don't
+have to go through the cleaning steps every time we want to use the
+data. We will be exporting to a *.csv* file, since this format is more
+**interoperable** than *.xlsx*.
+
+We will use `write_csv()` from the [readr]{.pkg} package, which, you guessed it,
+is part of **tidyverse**. We will store the new file in the *data/* folder.
+
+```{r}
+write_csv(data_clean, here("data/mortuary_clean.csv"))
+```
+
+
+## Finishing up
+
+A note on reproducibility. We have a lot of objects in the
+Global Environment (see the Environment pane), and these
+will not be present in someone else's Global Environment
+unless they are produced using the script. So a good test
+to see if the script runs as it should from a clean
+Environment is to clear our environment with `rm(list = ls())`,
+and then run the script.
+
+::: {.callout-important}
+## Don't be rude
+
+It's important when you are sharing code that your code is
+not invasive. `rm(list = ls())` is very invasive code
+because it clears the Global Environment of the user.
+
+**Do not** include `rm(list = ls())` in a script that
+you are sharing with others (just don't include it in a
+script. Period.) Or any other invasive code that modifies
+the users environment. Otherwise [Jenny Bryan](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/)
+will set your computer on fire.
+
+![](/images/jenny-bryan-arson.png)
+
+:::
+
+Another recommendation was also discussed in [03 - RStudio Projects](/docs/03_rstudio-project.qmd#a-final-note): to ensure reproducibility do not to save
+your workspace when you close RStudio (the default behaviour).
+To change the default setting, go to
+
+  Tools > Global Options... > Workspace
+
+And make sure the option 'Restore .RData into workspace at startup'
+is **not** selected, and that 'Save workspace to .RData on exit' is
+set to 'Never'.

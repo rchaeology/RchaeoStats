@@ -1,0 +1,61 @@
+## Installing R and RStudio
+
+To work with R and RStudio, you must first install R. R Studio
+is the integrated development environment (IDE) and runs R.
+You can use R without RStudio, but you can't use RStudio without
+R.
+
+### Installing R 
+
+::: {.panel-tabset}
+
+## Windows
+
+Download the [latest version of R](https://cran.r-project.org/bin/windows/base/) (R-X.Y.Z-win.exe) on CRAN.
+
+Run the R-X.Y.Z-win.exe file and follow the installation instructions (defaults are fine)
+
+Download the [latest version of RStudio](https://posit.co/download/rstudio-desktop/)
+select the *.exe* file associated with OS Windows 10/11
+
+## MacOS
+
+Download the [latest version of R](https://cran.r-project.org/bin/macosx/) (R-X.Y.Z-win.exe) on
+CRAN.
+
+::: {.callout-important}
+If your Mac is running an M1/M2 chip, then you need the arm architecture (R-X.Y.Z-arm64.pkg).
+
+If your Mac is running an Intel chip, then you need the x86 architecture (R-X.Y.Z-x86_64.pkg).
+
+Find out which one using [this How-To Geek post](https://www.howtogeek.com/706226/how-to-check-if-your-mac-is-using-an-intel-or-apple-silicon-processor/).
+:::
+
+Select the *.pkg* file appropriate for you Mac chip and macOS version.
+
+Download the [latest version of RStudio](https://posit.co/download/rstudio-desktop/)
+select the *.dmg* file associated with OS macOS 11+.
+
+## Linux
+
+Download the [latest version of R](https://cran.r-project.org/bin/linux/) on
+CRAN.
+
+Select your distro and follow the instructions.
+
+Download the [latest version of RStudio](https://posit.co/download/rstudio-desktop/)
+for your distro (e.g. *.deb* for Ubuntu/Debian).
+
+
+:::
+
+After installing R and RStudio, you will only ever need to open RStudio, as it will
+run R for you.
+
+## Updating R and RStudio
+
+You can check for updates in RStudio by going to Help > Check for updates.
+
+To update R, you will have to go to CRAN and repeat the steps from
+[above](#installing-r). To check which R version you have, type
+`version$version.string` in the console.

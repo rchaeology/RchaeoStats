@@ -1,0 +1,221 @@
+---
+title: Basics of R
+---
+
+## Navigating RStudio 
+
+![](/images/fresh-rstudio.png)
+
+The first time you open RStudio there will be three panes:
+
+- the Console: left
+  + this is R
+  + here you can execute R code
+- the Environment pane: right-top
+  + variables are stored here
+- the Files pane: right-bottom
+  + this is your working directory
+
+
+## Console
+
+The console is where you interact directly with R
+
+The greater-than symbol, `>`, indicates that are is ready for your
+input.
+
+The symbol will not be present where you have your
+output. Instead, you will see a one in square brackets, `[1]`,
+which indicates the first element of our output.
+
+## Console {.smaller}
+
+See what happens when we have an output with multiple elements; for example, we can print the whole numbers from 42 to 100:
+
+```{r}
+42:100
+```
+
+42 is next to the `[1]` and the next row will show the nth element of the output.
+
+If you see a plus sign, `+`, it means the console is waiting for more input.
+
+If you don't want to enter more code, press <kbd>Esc</kbd>.
+
+
+## Mathematical operations
+
+R can be used as a calculator to do basic maths.
+
+```{r}
+3 + 4
+```
+
+or more complicated arithmetic (at least for many on social media...)
+
+```{r}
+8 / 2 * (2 + 2)
+```
+
+Here are some of the mathematical operators you can use:
+
+| operator | function |
+|---|---|
+| `+` | addition |
+| `-` | subtraction |
+| `*` | multiplication |
+| `/` | division |
+| `^` or `**` | exponentiation/order |
+| `()` | brackets |
+| `%%` | modulus |
+
+## Objects
+
+Performing operations and getting the output immediately is
+handy, but as we start performing more complicated calculations
+with multiple steps, it is useful to store outputs in memory.
+
+To store an object in R, we use the 'assignment operator', `<-`.
+On the left side of the arrow is the name we want to give the
+object, and on the right side is the object we want to store.
+
+```{r}
+my_sum <- 4 + 2
+```
+
+As you may notice, there is no output in the console. That's a good thing.
+Take a look in your Environment pane. There is now an object there called
+`my_sum` with the value 6.
+
+To print the value of the object, we can use the `print()` function
+
+```{r}
+print(my_sum)
+```
+
+or type the name of the object in the console.
+
+```{r}
+my_sum
+```
+
+We can now perform further calculations on the object.
+
+```{r}
+my_sum * 2
+```
+
+We can also overwrite the object by assigning a new value to it.
+
+```{r}
+my_sum <- 3 * 9
+my_sum
+```
+
+We can assign multiple values to an object by `c`ombining them.
+
+```{r}
+fib <- c(0, 1, 1, 2, 3, 5, 8, 13, 21)
+```
+
+and then the arithmetic operations are applied to each element in the
+**vector**.
+
+```{r}
+fib + 2
+fib * 2
+```
+
+### Common mistakes
+
+One of the most common errors you will encounter is
+
+```{r}
+#| eval: false
+
+my_sums
+#> Error: object 'my_sums' not found
+My_Sum
+#> Error: object 'My_Sums' not found
+```
+
+R is really good at doing complex calculations. It's not very good
+at reading the minds of humans, or inferring what we mean. Make sure
+you check for typos!
+
+## Types of R objects
+
+So far we have just worked with 'numeric' types. `my_sum` is numeric,
+but there are two types of numeric: double and integer.
+
+To figure out what type `my_sum` is, we can use another R object called
+a 'function'. R has a lot of built-in functions that can perform specific
+operations. You have already seen `print()`, which prints objects.
+We can use `class()` and `typeof()` to figure out what is `my_sum`.
+
+```{r}
+class(my_sum)
+typeof(my_sum)
+```
+
+Other types include
+
+```{r}
+#| eval: false
+TRUE # logical
+FALSE # logical
+NA # logical
+"string" # character
+"also a string" # character
+NULL # NULL
+```
+
+
+## R packages
+
+The true power of R is in the packages. The functions and other 
+built-in objects we have been working with so far are part of
+'base R'. Stuff that is made available to you when you download R.
+You can get a lot done with base R. Using packages allows you to
+extend the functionality of R to pretty much anything you can (and can't) imagine.
+
+Packages are developed and maintained by R users who found something
+that R couldn't do, or was awkward to do, and made a package to fix
+this. Packages are reviewed by the Comprehensive R Archive Network,
+or CRAN (Sounds familiar? this is likely where you went to download R).
+
+At the time of writing, there are currently 21,205 packages on CRAN.
+And those are just the official packages that have gone through the
+submission procedure. There are many more also available on GitHub and
+other git-hosting platforms. But mostly GitHub (for better or worse).
+
+### Installing packages
+
+There are a few different ways to install packages.
+
+The quickest way is to do it from the console using the `install.packages()`
+function. For example, to install the **tidyverse** package:
+
+```r
+install.packages("tidyverse")
+```
+
+Just make sure to check your spelling (it's also CASE-SENSITIVE).
+
+The other option is in RStudio: Tools > Install Packages...
+
+### Loading packages
+
+Installing a package makes it available on your device, but does not
+load it in R. To do that we use `library()`.
+
+```r
+library(tidyverse) # note no quotation marks
+```
+
+![Here is a more technical overview of package states when you install and load them. Image taken from [*R Packages (2e)*](https://r-pkgs.org/)](https://r-pkgs.org/diagrams/install-load.png)
+
+When you close RStudio, the packages will be unloaded, and you will
+have to load them again the next time you open RStudio. This allows
+R(Studio) to be very lightweight and not accumulate loaded packages
+resulting in a longer time to open RStudio.

@@ -1,0 +1,40 @@
+---
+title: RStudio Project
+format: 
+  revealjs: 
+    navigation-mode: linear
+    df-print: paged
+    center: false
+---
+
+## RStudio Project
+
+Well begun is half done
+
+![GIPHY](https://media.giphy.com/media/Hu6zl8U7QdzPy/giphy.gif)
+
+## RStudio Project
+
+The best way to organise a project is using an RStudio Project.
+
+An RStudio Project creates a self-contained, portable project.
+
+It makes working with file paths easier
+
+No more absolute file paths using `setwd()`, that will break
+on any other computer.
+
+File paths only need to be relative to the project root.
+
+![](https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/e684ee45-98fc-469e-997c-e2d68b0096cd.png?h=7d3883c5f8cc2af55fcbb34059b83b3f){img-alt="A cartoon of a cracked glass cube looking frustrated with casts on its arm and leg, with bandaids on it, containing “setwd”, looks on at a metal riveted cube labeled “R Proj” holding a skateboard looking sympathetic, and a smaller cube with a helmet on labeled “here” doing a trick on a skateboard."}
+
+
+## RStudio Project
+
+::: {.r-stack}
+![Artwork by [@allison_horst](https://twitter.com/allison_horst)](https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/483e1776-7126-4255-8e84-0557c397025f_rw_3840.png?h=8258ada8e913b11ee257bb7fa42d42f2){.fragment .fade-out fig-alt='A frustrated looking little monster in front of a very disorganized cooking area, with smoke and fire coming from a pot surrounded by a mess of bowls, utensils, and scattered ingredients.'}
+
+[BECOMES...]{.fragment .fade-in-then-out style="font-size: 3em"}
+
+![](https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/5c559781-f15a-4be9-8af0-426fcc71a9e8_rw_3840.png?h=e99f725df0ff33ab0a31855b24cb79f2){.fragment fig-alt='An organized kitchen with sections labeled "tools", "report" and "files", while a monster in a chefs hat stirs in a bowl labeled "code."'}
+:::

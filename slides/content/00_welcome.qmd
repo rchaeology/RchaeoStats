@@ -1,0 +1,113 @@
+---
+title: Hello 👋
+description: Brief introduction to the materials.
+image: "/images/00_welcome.png"
+format: 
+  revealjs: 
+    navigation-mode: linear
+    df-print: paged
+    center: false
+---
+
+```{r}
+library(here)
+mortuary_data <- readxl::read_xlsx(here("data/mortuary-data2.xlsx"))
+sheep_data <- readr::read_csv(here("data/sheep-data.csv"))
+```
+
+## R
+
+Pronounced /'Arrrgh/
+
+
+## Why R?
+
+Because it's the best!
+
+End of presentation.
+
+![[Artwork by @allison_horst.](https://twitter.com/allison_horst)](https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/151b3f30-b75a-4f57-b0e5-228c4cc3fd02_rw_1920.png?h=eb3f640356da909ff1c615d2cf45eb4e)
+
+
+## Why R?
+
+R is a **free and open source** software environment for statistical computing and graphics
+
+There are 20000+ available packages on CRAN
+
+The R community is pretty cool
+
+![[Artwork by @allison_horst.](https://twitter.com/allison_horst)](https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/5ccff989-900e-4f2b-aece-55278b563cfa_rw_1920.png?h=e61fb9e7f31d490ebf29f9f69ea2977a){fig-alt='Header text "R learners" above five friendly monsters holding up signs that together read "we believe in you."'}
+
+## Why R(chaeology)? {background-image="/images/arch-languages.png" background-position="90% 50%" background-size="20%"}
+
+Seems to be the most popular
+
+[Batist & Roe (2024). DOI: 10.11141/ia.67.13](https://doi.org/10.11141/ia.67.13)
+
+
+## Why RStudio?
+
+RStudio is an integrated development environment (IDE) specifically for R
+
+It provides a bunch of extra features to make using R a delight!
+
+
+## tidyverse
+
+The tidyverse is a collection of R packages sharing the same data science philosophy
+
+It provides a nice workflow for cleaning, visualising, and transforming data
+
+**Aspects of 'base R' will also be covered**
+
+![](/images/base.png)
+
+
+## About the materials {.smaller}
+
+It **is not** enough to cover all important topics.
+
+It **is** enough to teach you how to find answers and implement them yourself.
+
+![](/images/googleit.jpg)
+
+
+
+## The datasets: Sheep Astragali {.smaller}
+
+Sheep astragulus morphology from Iron Age Eastern Mediterranean.
+
+nmar79. (2023). nmar79/Med_Sheep_Astragals: v0.1 (v0.1). Zenodo. https://doi.org/10.5281/zenodo.10276147
+
+```{r}
+#| label: sheep-data
+#| echo: false
+sheep_data
+```
+
+
+## The datasets: Sheep Astragali {.scrollable}
+
+{{< include /_data-dict-sheep.md >}}
+
+
+## The datasets: Kiwulan Burials {.smaller}
+
+Burial data from northeastern Taiwan ranging from the Iron Age through the European colonization period.
+
+> Li-Ying Wang & Ben Marwick, (2021). Compendium of R code and data for "A Bayesian networks approach to infer social changes from burials in northeastern Taiwan during the European colonization period". Accessed 23 Aug 2021. Online at https://osf.io/xga6n/
+
+
+```{r}
+#| label: the-data
+#| echo: false
+mortuary_data
+```
+
+
+
+## The datasets: Kiwulan Burials {.scrollable}
+
+{{< include /_data-dict-mortuary.md >}}
+

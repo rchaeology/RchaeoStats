@@ -1,0 +1,64 @@
+/*-- scss:defaults --*/
+
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Text&family=Varela+Round&display=swap');
+@import url("https://www.nerdfonts.com/assets/css/webfont.css");
+
+// Cover image colours
+$purple: #782386;
+$pink: #ab1866;
+$pinkish-red: #d1295a;
+$peach: #e05b5c;
+$starch: #ffcc66;
+
+$body-bg: #fff;
+$body-color: #000;
+$link-color: $purple;
+$presentation-heading-color: $pink;
+$font-family-sans-serif: "Red Hat Text", sans-serif;
+
+/*-- scss:rules --*/
+
+.reveal .slide blockquote {
+  border-left: 3px solid $text-muted;
+  padding-left: 0.5em;
+}
+
+.right-align {
+  text-align: right;
+}
+
+.large {
+  font-size: 1.6em;
+  font-weight: 600;
+}
+
+.x-large {
+  font-size: 2.4em;
+  font-weight: 800;
+}
+
+.pinkish-red {
+  color: $pinkish-red;
+}
+
+.r-console {
+  border-left: 1px solid blue !important;
+  position: fixed;
+  margin-left: 20px;
+}
+
+
+/* Callout header */
+.r-console-header {
+  padding: 25px 15px;
+  background: #555;
+  font-size: 30px;
+  color: white;
+}
+
+/* Callout container/body */
+.r-console-container {
+  padding: 15px;
+  background-color: #ccc;
+  color: black
+}

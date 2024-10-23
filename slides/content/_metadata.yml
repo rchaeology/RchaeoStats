@@ -1,0 +1,6 @@
+format: 
+  revealjs: 
+    footer: "[back to site](/slides/index.html)"
+    center: true
+    theme: slides.scss
+engine: knitr

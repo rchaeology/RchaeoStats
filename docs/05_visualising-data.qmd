@@ -1,0 +1,890 @@
+---
+title: 'EDA: Visualising data with ggplot2'
+---
+
+```{r}
+#| label: viz-setup
+#| include: false
+library(here)
+library(ggplot2)
+library(dplyr)
+library(forcats)
+mortuary_data <- readr::read_csv(here("data/mortuary_clean.csv"))
+```
+
+![[Artwork by @allison_horst.](https://twitter.com/allison_horst)](https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/9a306c0a-dac8-413d-ba2e-cc7fd4c4d5c8_rw_1920.png?h=c802991088a9623f1f7aa18c470797ee){alt-image='A fuzzy monster in a beret and scarf, critiquing their own column graph on a canvas in front of them while other assistant monsters (also in berets) carry over boxes full of elements that can be used to customize a graph (like themes and geometric shapes). In the background is a wall with framed data visualizations. Stylized text reads "ggplot2: build a data masterpiece."'}
+
+::: {.callout-tip collapse="true"}
+## Prerequisites
+
+#### Knowledge
+
+Core
+
+#### Objects
+
+Project organisation + Data cleaning
+
+:::
+
+Plotting is a great way of exploring the distribution of, and relationships
+between our variables. They also often offer a lot more insights
+into our variables than many statistical tests, and are therefore
+a crucial part of data analysis.
+
+
+## Setup
+
+Start a new script and save it as *01_data-viz.R* in the *scripts/* folder.
+
+The [ggplot2]{.pkg} package is part of **tidyverse**, so we can just load
+**tidyverse** and upload our data. We are doing this again so the new 
+script will be self-contained and
+not rely on the previous script we created.
+
+```r
+library(tidyverse)
+library(here)
+
+mortuary_data <- read_csv(here("data/data_clean.csv"))
+```
+
+## Basic usage of ggplot2
+
+The anatomy of a standard ggplot (with pipe) is:
+
+```r
+data |>
+  ggplot(aes(<mappings>)) +
+    <geometric function> +
+    <customisations>
+```
+
+Where **mappings** are our variables, for example on the X and Y axes.
+We start with our data, the `mortuary_data` data frame and pipe that
+into `ggplot()`. We can do this because data is the first argument
+in `ggplot()`.
+
+```{r}
+mortuary_data |>
+  ggplot()
+```
+
+This gives us a blank grey background, because all we've told R is that we want a plot.
+We can define how our variables are mapped to the visual properties of the plot by adding
+variables to the `mapping` argument through the `aes`thetics function. In short, we will
+define the x- and y-axis.
+
+```{r}
+mortuary_data |>
+  ggplot(mapping = aes(x = Length, y = Width))
+```
+
+This gives a little more structure to the plot, since the variables can define the limits
+of the axes.
+
+Then we can define the geometrical object used to represent our data; essentially what type of
+plot we want to use. We can do this using the `geom_*()` functions. To produce a scatter plot we
+can use `geom_point()`.
+
+```{r}
+mortuary_data |>
+  ggplot(mapping = aes(x = Length, y = Width)) +
+    geom_point()
+```
+
+We now have a base plot to which we can add additional mappings and layers to increase the
+complexity and improve the aesthetics of the plot. First, let's focus on the different types
+of variables and how we can plot them.
+
+
+## Categorical variables
+
+A common way to visualise a single categorical variable is with a bar plot.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Phase)) +
+    geom_bar()
+```
+
+This gives us a quick count of burials (rows) in each `Phase` of occupation.
+
+Because `Phase` is a **factor**, `geom_bar()` will count how many
+times each **level** of `Phase` occurs.
+
+
+### Factors
+
+A factor is a type of data that has categories encoded in the object.
+If we take a look at `Phase`, we can see that it has many strings that
+are not unique. They are confined to the values
+`r levels(as.factor(mortuary_data$Phase))`.
+
+Those values are called the `levels()` of a variable.
+
+```{r}
+levels(mortuary_data$Phase)
+```
+
+If the output is `NULL` it means our variable is not a factor.
+
+We can convert a variable to a factor using
+`as_factor()` from the [forcats]{.pkg} package (part of
+[tidyverse]{.pkg}), or `as.factor()` from base R. It's only
+temporary because we're not assigning it to an object.
+
+```{r}
+as_factor(mortuary_data$Phase)
+```
+
+We can see some additional information about the levels that is not included in
+a regular character vector: `Levels: pre euro post chi disturbed`.
+We can now extract this information using `levels()`.
+
+```{r}
+levels(as_factor(mortuary_data$Phase))
+```
+
+We can also count the number of levels with `nlevels()`.
+
+```{r}
+nlevels(as_factor(mortuary_data$Phase))
+```
+
+And we can order the levels of our factor
+
+```{r}
+factor(
+  mortuary_data$Phase,
+  levels = c("chi", "pre", "euro", "post", "disturbed"),
+  ordered = T # the order given in levels becomes the order of the levels
+)
+```
+
+Notice the difference between an ordered and unordered factor
+
+Unordered: `Levels: pre euro post chi disturbed`
+Ordered: `Levels: chi < pre < euro < post < disturbed`  
+
+
+### Two categorical variables
+
+For two categorical variables we can use... bar plots! We can add a variable
+by mapping it in the `aes`thetics.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Phase, fill = Condition)) +
+    geom_bar()
+```
+
+Based on the warning message, it seems `ggplot()` was unable to automatically
+convert `Condition` to a factor. This is probably because the levels of
+conditions are numeric, and not strings like `Phase`.
+We need to explicitly convert `Condition` to a factor.
+
+We could do this as part of the pipe
+
+```{r}
+mortuary_data |>
+  mutate(Condition = as_factor(Condition)) |>
+  ggplot(aes(x = Phase, fill = Condition)) +
+    geom_bar()
+```
+
+or do it in `aes()`
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Phase, fill = as_factor(Condition))) +
+    geom_bar()
+```
+
+Now we have a bar plot with two variables. If it's difficult to
+assess counts of the different conditions, we can change it from
+a stacked bar plot to... whatever this is:
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Phase, fill = as_factor(Condition))) +
+    geom_bar(position = "dodge")
+```
+
+And if we, like in this case, have highly variable counts (there are
+clearly a larger number of burials in the `euro` and `pre` groups) we can use
+proportions instead of absolute counts.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Phase, fill = as_factor(Condition))) +
+    geom_bar(position = "fill")
+```
+
+This standardises the counts across all phases and allows us to
+compare counts across `Phase`.
+
+There are also pie charts, but these should be used very sparingly because
+it is difficult to distinguish between levels of a categorical variable
+if there are too many. They are also weirdly complicated to make with
+[ggplot2]{.pkg}.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = "", fill = Phase)) +
+    geom_bar(width = 1) +
+    coord_polar("y", start = 0) +
+    theme_void()
+```
+
+Quick, which is bigger, NA or euro? What about chi, disturbed, and post?
+
+
+## Continuous variables
+
+### Histogram
+
+Perhaps one of the simplest ways to visualise continuous variables is with a
+**histogram**. All you need is one continuous variable, for example `Length`.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Length)) +
+    geom_histogram()
+```
+
+This allows us to see the distribution of a continuous variable with the observations grouped into
+'bins' of a specific size. The taller the bars, the more observations are in the bins.
+We can create larger bins or reduce the number of bins,
+which will change the shape of the plot. Typically you might want to adjust this if you have
+many gaps in your histogram.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Length)) +
+    geom_histogram(bins = 10)
+```
+
+You can also reduce the bin size or increase the number of bins
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Length)) +
+    geom_histogram(bins = 40)
+```
+
+::: {.callout-caution}
+## Beware mixing symbols
+
+A common mistake when creating a ggplot is to use the pipe, `|>`, instead
+of the plus symbol, `+`, for layering elements of the plot.
+Fortunately, there is a helpful error message.
+
+```{r}
+#| eval: false
+mortuary_data |>
+  ggplot(mapping = aes(x = Length, y = Width)) |>
+    geom_point()
+```
+
+```{r}
+#| echo: false
+try(
+  mortuary_data |>
+    ggplot(mapping = aes(x = Length, y = Width)) |>
+      geom_point()
+)
+```
+
+:::
+
+### Density
+
+If you're not a fan of the bars (and the middle-finger aesthetic) you can instead
+choose a **density** plot, which uses a kernel density estimate to
+provide a smoothed version of a histogram.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Length)) +
+    geom_density()
+```
+
+Instead of binning observations we are provided with a continuous density of observations.
+We can see from the plot that we pretty much have a normal distribution. This becomes
+especially clear if we insert the mean value. We can do that by
+using `geom_vline()` to insert a `dashed` `v`ertical `line` at the mean
+of `Length`.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Length)) +
+    geom_density() +
+    geom_vline(
+      xintercept = mean(mortuary_data$Length, na.rm = T),
+      linetype = "dashed"
+    )
+```
+
+We can compare the distribution of a variable between groups using the
+fill aesthetic. For example, we can compare the two excavation `Layer`s.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Length, fill = as_factor(Layer))) +
+    geom_density()
+```
+
+To make each distribution more visible, we can make the fill of each
+distribution more transparent using the `alpha` argument.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Length, fill = as_factor(Layer))) +
+    geom_density(alpha = 0.6)
+```
+
+What `alpha` does is control the level of opacity of the `fill`, where
+`1` is a solid colour and `0` is completely transparent.
+
+
+::: {.callout}
+## Exercise
+
+Use the `colour` aesthetic to visulise the distribution of `Height`
+across all `Phase`s of occupation, except `"disturbed"`.
+
+Next use the `fill` aesthetic. What is the difference? (remember to add transparency)
+
+::: {.callout collapse="true"}
+## Solution
+
+```{r}
+mortuary_data |>
+  filter(Phase != "disturbed") |>
+  ggplot(aes(x = Length, colour = Phase)) +
+    geom_density(alpha = 0.6)
+```
+
+```{r}
+mortuary_data |>
+  filter(Phase != "disturbed") |>
+  ggplot(aes(x = Length, fill = Phase)) +
+    geom_density(alpha = 0.6)
+```
+
+:::
+:::
+
+If there are too many levels in a `fill` variable, a better option may
+be to separate them with `facet_wrap`.
+
+```{r}
+mortuary_data |>
+  filter(Phase != "disturbed") |>
+  ggplot(aes(x = Length, fill = Phase)) +
+    geom_density(alpha = 0.6) +
+    facet_wrap(~ Phase)
+```
+
+For an even better comparison we can force them into a single column.
+
+```{r}
+mortuary_data |>
+  filter(Phase != "disturbed") |>
+  ggplot(aes(x = Length, fill = Phase)) +
+    geom_density(alpha = 0.6) +
+    facet_wrap(~ Phase, ncol = 1)
+```
+
+To visualise two continuous variables, we can use a scatterplot, which was
+already introduced in [An Example Workflow](02_workflow.qmd#visualising-the-data-with).
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width)) +
+    geom_point()
+```
+
+The plot is admittedly a bit dull. To fix this we can add some colour to our geomteric
+object.
+We can add the same `colour` to all the points
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width)) +
+    geom_point(colour = "red")
+```
+
+or to groupings in the data by mapping a variable to `colour` in the `aes`thetics.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width)) +
+    geom_point(aes(colour = Phase))
+```
+
+Similarly we can change the `size` and `shape` of all the points
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width)) +
+    geom_point(aes(col = Phase), size = 4, shape = 2)
+```
+
+or map a variable to `size` and `shape`
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width)) +
+    geom_point(aes(col = Phase, size = Height, shape = as_factor(Layer)))
+```
+
+But don't go overboard or you'll make it completely unreadible!
+
+
+## Mixed categorical and continuous variables
+
+When mixing categorical and continuous variables, a box plot is a
+reasonable choice, with notable limitations.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(y = Length, x = Phase)) +
+    geom_boxplot()
+```
+
+Box plots are useful, but contain limited information. How many observations are there?
+How are the observations distributed? 
+
+![[Artwork by @allison_horst.](https://twitter.com/allison_horst)](https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/ce97a439-ede5-4e6d-83d8-31106cd21cf4_rw_1920.png?h=dc68ef733191bae4563a8869d9bf7ea9){fig-alt='Main text: "Are your summary statistics hiding something?" On the left is a opaque gray bar plot with an error bar, looking mischievous while hiding individual data points in a net behind it. On the right is a transparent bar plot with an error bar, looking exposed, with individual data points exposed and dancing. The bottom four data points have arms that spell "YMCA" as if dancing to the Village People.'}
+
+This is where the layering mechanism of [ggplot2]{.pkg}
+really shines. We can add points to the plot with `geom_point()`.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(y = Length, x = Phase)) +
+    geom_boxplot() + 
+    geom_point()
+```
+
+But this isn't much better. Because the x-axis is discrete, all the
+points are lined up in a few columns. A better option is `geom_jitter()`.
+ 
+```{r}
+mortuary_data |>
+  ggplot(aes(y = Length, x = Phase)) +
+    geom_boxplot() + 
+    geom_jitter()
+```
+
+`geom_jitter()` is similar to `geom_point()`, but instead of plotting the
+points at there exact x and y values, it adds some random noise to each
+point on the x- and y-axis, which allows us to see all the observations,
+which otherwise would have been on top of one another.
+
+We can reduce the amount of random noise with the `height` and `width`
+arguments. This is particularly useful if it's hard to tell what the
+original value was, or if, like in our case, it's hard to tell which
+category a point belongs to.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(y = Length, x = Phase)) +
+    geom_boxplot() +
+    geom_jitter(
+      width = 0.2,
+      height = 0.2
+    )
+```
+
+Now it's very clear to which `Phase` each point belongs, but we're also
+still able to see all of the points in our data.
+
+::: {.callout-caution}
+## Order matters
+
+**PSA:** Beware the order in which you layer your geometric objects.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(y = Length, x = Phase)) +
+  geom_jitter(
+    width = 0.2,
+    height = 0.2
+  ) +
+  geom_boxplot() # the boxes will be in front of the points
+```
+
+:::
+
+One final note when overlaying a box plot with points. The outliers of
+the box plot will be visible along with the actual outlier shown
+with `geom_jitter()`. Therefore it's necessary to suppress the outliers
+from the box plot.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(y = Length, x = Phase)) +
+    geom_boxplot(
+      outlier.shape = NA
+    ) +
+    geom_jitter(
+      width = 0.2,
+      height = 0.2
+    )
+```
+
+We could also have used `outlier.colour = "transparent"` for the same result.
+
+If there were too many points on the plot, we could use `geom_violin` instead of
+`geom_jitter` to show the underlying distribution.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(y = Length, x = Phase)) +
+    geom_violin() +
+    geom_boxplot(
+      outlier.shape = NA
+    )
+```
+
+And make some adjustments to the boxplot size and violin `fill` to make the plot more
+legible, and remove the legend since it doesn't contain any extra information.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(y = Length, x = Phase)) +
+    geom_violin(aes(fill = Phase)) +
+    geom_boxplot(
+      width = 0.2,
+      outlier.shape = NA
+    ) +
+    theme(legend.position = "none")
+```
+
+
+
+
+<!--
+
+
+
+
+
+In addition to the plot, `ggplot()` also provides us with a warning message. It seems
+that we have 13 observations that couldn't be plotted, because either the y or x aesthetic
+(or both) was missing. We can take a quick look at what was missing.
+
+```{r}
+mortuary_data |>
+  filter(is.na(Width) | is.na(Length))
+```
+
+
+```{r}
+#| warning: false
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width)) +
+    geom_point(colour = "blue") # or color = "blue"
+```
+
+(don't worry if you still see a warning in your console but not here. I have suppressed
+the warning since there's no need to keep showing it.)
+
+Or maybe you don't like blue...
+
+```{r}
+#| warning: false
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width)) +
+    geom_point(colour = "tomato")
+```
+
+There. Perfect! Right...?
+
+### Adding aesthetics
+
+The colours we used above are purely aesthetic and add no new information to our plot.
+We can now already see that there is a positive relationship between the variables
+`Length` and `Width`. To take this relationship a step further, we can map a variable
+to colour instead of just providing colour to the `geom`.
+
+```{r}
+#| warning: false
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width, colour = Phase)) +
+    geom_point()
+```
+
+Now we can see the relationship (or lack thereof) in the size of burial between the
+different phases of occupation. To really drive home the relationship between the
+variables we can add a curve with `geom_smooth()`. We want to see the linear relationship
+so we will use `method = "lm"`.
+
+```{r}
+#| warning: false
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width, colour = Phase)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+```
+
+-->
+
+
+
+
+
+::: {.callout}
+## Exercise
+
+Create a scatterplot showing the relationship between the `Length` and `Width`
+variables with a `lm` trendline, and with each category of `Phase`
+in a different `shape` and `colour`.
+
+::: {.callout collapse="true"}
+## Solution
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width)) +
+    geom_point(
+      aes(colour = Phase, shape = Phase),
+      size = 2
+    ) +
+    geom_smooth(method = "lm") +
+    theme_minimal()
+```
+
+:::
+:::
+
+Since our new dataset has a number of missing variables, the plot looks
+a little different. Adding a `shape` seems to have removed our `NA`s, which
+is not what we want.
+We need to define the shape that is used for missing values with a `scale`
+function. Scales help control the mapping of data to aesthetics, including
+size, colour, and shape. To modify the shape of a discrete variable `Phase`,
+we use the `scale_shape_discrete()` function and the `na.value` argument.
+
+```{r}
+#| warning: false
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width)) +
+    geom_point(aes(colour = Phase, shape = Phase)) +
+    geom_smooth(method = "lm") +
+    scale_shape_discrete(na.value = 10)
+```
+
+Giving the value 10 is just defining which shape we want to use. The book
+[ggplot2: Elegant Graphics for Data Analysis](https://ggplot2-book.org/scales-other#sec-scale-shape)
+has a legend of the available shapes and their values (and lots of other useful info!)
+
+
+## Alternate examples
+
+We could look at the trendlines for each level of `Phase`.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width, colour = Phase)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+```
+
+The error bands are making it kinda difficult to see the plot, so we can remove
+them with `se = FALSE`.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width, colour = Phase)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE)
+```
+
+
+Or, we could instead remove the `Phase` that is causing the huge error bands;
+in this case, `disturbed`.
+
+```{r}
+#| warning: false
+mortuary_data |>
+  filter(Phase != "disturbed") |>
+  ggplot(aes(x = Length, y = Width, colour = Phase)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+```
+
+or we could zoom in using `coord_cartesian()` by defining the limits of the axes
+we want to show on the plot.
+
+```{r}
+#| warning: false
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width, colour = Phase)) +
+    geom_point() +
+    geom_smooth(method = "lm") +
+    coord_cartesian(ylim = c(0,100))
+```
+
+The benefit of the latter approach is that we are still seeing the plot with
+the full data and just zooming in to get a better look.
+
+Because we are providing the colour mapping in the `ggplot()`, all `geom`s inherit
+this value. If we just want to look at the overall relationship, we can move the
+colour mapping to `geom_point()`, which will allow us to keep the `Phase` colours
+and see the overall trendline for the data.
+
+```{r}
+#| warning: false
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width)) +
+    geom_point(aes(colour = Phase)) +
+    geom_smooth(method = "lm")
+```
+
+Now for some finishing touches. There are many reasons why only using colours to
+convey information is a bad idea. Think about colour perception, and that publishers
+charge you extra for colour printing. So let's make each `Phase` a different `shape`
+as well.
+
+```{r}
+#| warning: false
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width)) +
+    geom_point(aes(colour = Phase, shape = Phase)) +
+    geom_smooth(method = "lm")
+```
+
+Then we will modify the `lab`el`s` of the plot to convey a little more information.
+
+```{r}
+#| warning: false
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width)) +
+    geom_point(aes(colour = Phase, shape = Phase)) +
+    geom_smooth(method = "lm") +
+    labs(
+      x = "Length in cm",
+      y = "Width in cm",
+      colour = "Phase of occupation",
+      shape = "Phase of occupation" 
+    ) # we have to change both colour and shape to keep a single legend
+```
+
+As a final touch, we will add a colour palette that is more friendly to colour-deficient vision
+and change the background of the plot (the grey background is
+surprisingly controversial in the R community).
+
+```{r}
+#| warning: false
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width)) +
+    geom_point(aes(colour = Phase, shape = Phase)) +
+    geom_smooth(method = "lm") +
+    labs(
+      x = "Length in cm",
+      y = "Width in cm",
+      colour = "Phase of occupation",
+      shape = "Phase of occupation" 
+    ) +
+    scale_colour_viridis_d() + # new palette
+    scale_shape_discrete(na.value = 10) +
+    theme_minimal() # minimal background
+```
+
+<!-- 
+
+If there are differences in the counts of individuals across the different
+phases, then it becomes hard to compare the distribution of sexes across those
+phases. Another way of presenting those data would be as proportions in each
+phase.
+
+```{r}
+#| eval: false
+percent_sex <- mortuary_data_sex |>
+  count(Phase, Sex) |>
+  group_by(Phase) |>
+  mutate(
+    percent = (n / sum(n)) * 100
+  )
+```
+
+Here we have `count`ed the number of observations of each
+value of sex within each `Phase`, then we group by phase so that we can calculate
+the percentage of each count (`n`) within each phase, which we assign to a new
+variable `percent` using mutate. We can now use this in a plot.
+
+```{r}
+#| eval: false
+percent_sex |>
+  ggplot(aes(x = Phase, y = percent, fill = Sex)) +
+    geom_bar()
+```
+
+```{r}
+#| eval: false
+#| echo: false
+try(
+  percent_sex |>
+  ggplot(aes(x = Phase, y = percent, fill = Sex)) +
+    geom_bar()
+)
+```
+
+The problem is that `geom_bar()` only allows and *x* **or** *y* aesthetic,
+not both. To fix this there are two options:
+
+1. use `geom_bar(stat = "identity")`
+2. use `geom_col()`
+
+```{r}
+#| eval: false
+percent_sex |>
+  ggplot(aes(x = Phase, y = percent, fill = Sex)) +
+    geom_col()
+```
+
+-->
+
+<!-- move on to data transformation without too much customisation
+More ggplot customisation in Communication section -->
+
+## Saving your masterpiece for posterity
+
+To save a plot we can use `ggsave()` and provide a file path for the
+figure output. By default it will save the
+most recent plot. To save a specific plot, we need to save the plot
+as an object and provide it as an argument to `ggsave()`.
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Length, y = Width)) +
+    geom_point(aes(colour = Phase, shape = Phase)) +
+    geom_smooth(method = "lm") +
+    labs(
+      x = "Length in cm",
+      y = "Width in cm",
+      colour = "Phase of occupation",
+      shape = "Phase of occupation" 
+    ) +
+    scale_colour_viridis_d() + # new palette
+    theme_minimal() # minimal background
+```
+
+We will save the plot in the *figures/* folder and call it *burial-dim-scatter.png*.
+
+```{r}
+#| eval: false
+
+ggsave(mortuary_sex_pl, here("figures/burial-dim-scatter.png"))
+```
+
+If you're submitting to a journal that has figure requirements, you can adjust
+the arguments such as `height`, `width`, and `dpi`.
+
+```{r}
+args(ggsave)
+```

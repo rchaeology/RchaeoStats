@@ -1,0 +1,814 @@
+---
+title: 'EDA: Transforming data with tidyverse'
+---
+
+```{r}
+#| label: wrangle-setup
+#| include: false
+
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(readr)
+library(here)
+library(stringr)
+
+mortuary_data <- read_csv(here("data/mortuary_clean.csv"))
+```
+
+::: {.callout-tip}
+## Prerequisites
+
+### Knowledge
+
+Core + Visualising data
+
+### Objects
+
+Project organisation + Data cleaning
+
+:::
+
+Sometimes cleaning our data is not enough, and we need to make
+further modifications. We can transform data using various functions from [dplyr]{.pkg}.
+
+Again, let's start a new script and call it *02_data-transform.R*,
+saved to *scripts/*, and load **tidyverse** and [here]{.pkg}, and the data.
+
+```{r}
+#| label: transform-user-setup
+#| eval: false
+library(tidyverse)
+library(here)
+
+mortuary_data <- read_csv(here("data/mortuary_clean.csv"))
+```
+
+## Subsetting data
+
+The two main functions for subsetting data are `select()`
+and `filter()`.
+
+`select()` allows us to select columns (yes, they nailed the name).
+
+```{r}
+# by name
+select(mortuary_data, Golden_bead)
+# multiple names
+select(mortuary_data, Golden_bead, Glass_bead)
+# or (as before) position
+select(mortuary_data, c(22,23))
+```
+
+
+::: {.callout-warning collapse="true"}
+## Function conflicts
+
+There are many packages made for R, and only so many ways
+to name a function (with a name that makes sense...)
+When two packages have functions with the same name, this
+can create a conflict, since R will only be able to use one
+of the functions.
+
+For example, if you have both [dplyr]{.pkg} and the [MASS]{.pkg}
+packages loaded, you will likely run into issues
+with the `select()` function, since both packages
+have a function by that name, but they serve different
+purposes and have different argument structures.
+
+If R has decided to use the function from [MASS]{.pkg}, running
+the code `select(clean_data, Glass_bead)` will result in an error:
+`Error in select(clean_data, Glass_bead) : unused argument (Glass_bead)`
+
+To resolve this you can specify the function namespace, `namespace::function()`.
+
+```r
+dplyr::select(mortuary_data, Glass_bead)
+```
+
+You are essentially telling R that you specifically want to use `select()` from
+{dplyr}.
+:::
+
+You may have noted that there was no need to surround the name of the column
+in quotes (`"Glass_bead"`). This is a **tidyverse** thing that I won't go into
+any further. This may not be possible to do in other packages, where you could
+encounter an error in the form of `object Glass_bead not found`.
+
+![[Artwork by @allison_horst.](https://twitter.com/allison_horst)](https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/cb8d9c50-f48e-4c6d-a5b3-1d30ce0be2ad_rw_1920.png?h=1a879eda58a5efbf709ad0a59d784f98){fig-alt='Cartoon showing three fuzzy monsters either selecting or crossing out rows of a data table. If the type of animal in the table is “otter” and the site is “bay”, a monster is drawing a purple rectangle around the row. If those conditions are not met, another monster is putting a line through the column indicating it will be excluded. Stylized text reads “dplyr::filter() - keep rows that satisfy your conditions.” Learn more about dplyr::filter.'}
+
+`filter()` allows you to filter entries/rows based on certain conditions.
+If we wanted to only show the data that are associated with graves prior
+European arrival (`Phase == "pre"`):
+
+```{r}
+filter(mortuary_data, Phase == "pre")
+```
+
+We can also filter by numeric values:
+
+```{r}
+filter(mortuary_data, start_layer == 5) # only values that are equal to 5
+filter(mortuary_data, start_layer != 5) # only values that are NOT equal to 5
+filter(mortuary_data, start_layer > 5) # only values that are greater than 5
+filter(mortuary_data, start_layer > 5 & start_layer <= 12) # only values that are greater than 5 AND (&) less than, or equal to 12
+filter(mortuary_data, start_layer > 5 | start_layer < 12) # only values that are greater than 5 OR (|) less than 12
+```
+
+This could be combined with `select()` to only show the relevant columns.
+
+```{r}
+select(filter(mortuary_data, Phase == "pre"), ID, Golden_bead, Small_Metal_ring)
+```
+
+And now our code is very quickly becomming unreadable for humans...
+It's good practice to break up code to avoid having too many nested
+functions. In the above case we only have one function inside `filter()`,
+but that function has quite a few arguments. It's best to create multiple
+steps.
+
+```{r}
+pre_euro <- filter(mortuary_data, Phase == "pre")
+select(pre_euro, ID, Golden_bead, Small_Metal_ring)
+```
+
+Filtering on multiple variables:
+
+```{r}
+pre_euro_cond2 <- filter(mortuary_data, 
+                        Phase == "pre",
+                        Condition == 2)
+pre_euro_cond2_select <- select(pre_euro_cond2, ID, Golden_bead, Small_Metal_ring)
+```
+
+Mean golden beads for Pit P061 with Condition 2 (partially disturbed).
+
+```{r}
+mean(pre_euro_cond2_select$Golden_bead, na.rm = T)
+mean(pre_euro_cond2_select$Small_Metal_ring, na.rm = T)
+```
+
+::: {.callout-tip}
+## Missing data in R
+
+You will often see the default setting for removing missing values as
+`FALSE`. This may seem strange. Why not just remove them by default for
+convenience? This is because of the R philosophy that no values should
+be silently removed. Either a function will not remove `NA`s, or it will
+give you a message informing you how many missing values/rows were removed.
+
+:::
+
+If we wanted to also calculate the mean for the other conditions, we could repeat the
+above steps for `Condition == 1` and `Condition == 3`, but that would quickly get tedious.
+There is an easier way to calculate multiple means and other descriptive statistics using
+the `summarise()` and `group_by` functions from {dplyr}.
+
+
+## Groups
+
+Groups allow you to calculate statistics and perform operations on
+groups within the data. For example, we could group the data by
+the `Phase` variable and then perform a calculation on each level of
+`Phase`.
+The function to group data is `group_by()`.
+
+```{r}
+group_by(.data = mortuary_data, Phase)
+```
+
+As you can see above, `group_by()` doesn't seem to make any changes to
+the data, but if you look closely under the dimensions of the tibble at
+the top of the tibble itself, we now have `# Groups: Phase [6]`.
+
+We can also see the `class()` of the tibble will be "grouped_df".
+
+```{r}
+class(group_by(mortuary_data, Phase))
+```
+
+## summarise()
+
+`summarise()` (or `summarize()`) from [dplyr]{.pkg} is a very useful way
+of getting a wide range of descriptive statistics.
+
+```{r}
+summarise(
+    .data = mortuary_data,
+    mean_golden = mean(Golden_bead, na.rm = T)
+)
+```
+
+Like `mutate()`, `summarise()` takes a `.data` argument first,
+and then name-value pairs for the new variable name
+and the function to compute the summary statistic(s).
+Unlike `mutate()`, the output of summarise
+is completely new data frame with one row per variable
+and one column per summary statistic.
+Above we created one column (`mean_golden`) and one row (the mean
+value of the `Golden_bead` variable).
+
+We could also compute additional descriptives.
+
+```{r}
+summarise(
+    mortuary_data,
+    mean_golden = mean(Golden_bead, na.rm = T),
+    median_golden = median(Golden_bead, na.rm = T),
+    sd_golden = sd(Golden_bead, na.rm = T)
+)
+```
+
+Three name-value pairs equals three columns. To see how these
+descriptive statistics apply to different groups, such as the
+different phases of occupation in the `Phase` variable, we could
+use `group_by` function
+
+```{r}
+mortuary_data |>
+  group_by(Phase) |>
+  summarise(
+    mortuary_data,
+    mean_golden = mean(Golden_bead, na.rm = T),
+    median_golden = median(Golden_bead, na.rm = T),
+    sd_golden = sd(Golden_bead, na.rm = T)
+  )
+```
+
+or the `.by` argument in `summarise`.
+
+```{r}
+summarise(
+    mortuary_data,
+    mean_golden = mean(Golden_bead, na.rm = T),
+    median_golden = median(Golden_bead, na.rm = T),
+    sd_golden = sd(Golden_bead, na.rm = T),
+    .by = Phase
+)
+```
+
+::: {.callout-note}
+
+The values `NaN` (Not a Number) mean that there were no values in `Phase` that
+could be calculated. 
+
+:::
+
+`Phase` is a factor variable with five levels, "chi", "disturbed",
+"euro", "post", "pre", indicating the phase of occupation at the
+site. By adding it as a grouping variable through the `.by` argument
+(or `group_by` function)
+we tell `summarise()` that we want separate summary statistics for
+each level.
+
+
+Remember how we used a [bar plot to get Phase counts](05_visualising-data.qmd#categorical-variables)?
+We could also use `summarise()` with `n()`.
+
+```{r}
+mortuary_data |>
+  group_by(Phase) |>
+  summarise(
+    n = n()
+  )
+```
+
+::: {.column-margin}
+
+```{r}
+mortuary_data |>
+  ggplot(aes(x = Phase)) +
+    geom_bar()
+```
+
+:::
+
+This is equivalent to using the `count()` function.
+
+```{r}
+mortuary_data |>
+  count(Phase)
+```
+
+## across() {#across}
+
+If we want to perform the same operation on multiple variables,
+we can use the `across()` function. This will allow us to apply a function
+(or multiple functions) `across` multiple columns.
+
+![[Artwork by @allison_horst.](https://twitter.com/allison_horst)](https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/2471e3f8-348e-470c-a162-3eea0606ff96_rw_1920.png?h=1caf8d5f3d25792fbaf296a1e62b670a){fig-alt='A cute round fuzzy monster with fairy wings and a wand, with a party hat on reading “mean”, bouncing across the top of a data table applying the function to each column. Stylized text reads: “dplyr::across() - use within mutate() or summarize() to apply function(s) to a selection of columns!” An example shows the use within summarize: summarize(across(where(is.numeric), mean)). Learn more about dplyr::across().'}
+
+For example, we can `summarise` all our bead variables grouped by `Phase`.
+
+```{r}
+mortuary_data |>
+  group_by(Phase) |>
+  summarise(
+    across(
+        c(Golden_bead, Glass_bead, IndoPacific_bead), 
+        ~ mean(.x, na.rm = T)
+    )
+  )
+```
+
+The first argument in `across()` is the selection of columns to apply
+a function. The second argument is the function itself constructed as
+a lambda (`~ mean(.x, na.rm = T)`). The `.x` is a placeholder for the
+variables, so each of the selected variables will replace the `.x` in
+the mean function, producing a mean value for each of the variables
+supplied in the first argument of `across()`.
+
+
+Typing individual variables can get very tedious very quickly.
+If the variables are adjacent we can use a colon `:`
+
+```{r}
+mortuary_data |>
+  group_by(Phase) |>
+  summarise(
+    across(
+        Agate_bead:Metal_piece, 
+        ~ mean(.x, na.rm = T)
+    )
+  )
+```
+
+But we can rarely be so lucky. 
+The method of selecting everything from `Agate_bead` to `Metal_piece` is also a
+little too error-prone. For example, did you notice that `Metal_piece` isn't
+actually the last artefact column? And what if we had performed some sort of
+operation that rearranged columns? The risk of missing columns is quite high.
+Another way is to use selection helpers.
+
+## Selection helpers
+
+If we want to select a range of variables in our data, or perform
+specific operations on multiple variables, there is a suite of
+functions known as 'selection helpers'
+
+- `if_any()`
+- `if_all()`
+- `starts_with()`
+- `ends_with()`
+- `contains()`
+- `everything()`
+
+You can see `?dplyr_tidy_select` for a more complete list.
+
+If the variable names contain a specific string, we can use 
+
+- `starts_with` if the string is a prefix
+- `ends_with` if the string is a suffix
+- `contains` if the string is anywhere in the variable name
+
+For example, if we wanted to select all bead variables, we could
+use both `contains("bead")` and `ends_with("bead")`
+
+```{r}
+mortuary_data |>
+  group_by(Phase) |>
+  summarise(
+    across(
+        contains("bead"), 
+        ~ mean(.x, na.rm = T)
+    )
+  )
+```
+
+or
+
+```{r}
+mortuary_data |>
+  group_by(Phase) |>
+  summarise(
+    across(
+        ends_with("bead"), 
+        ~ mean(.x, na.rm = T)
+    )
+  )
+```
+
+It's probably safer to use `contains("bead")`, just in case not all the variables involving
+bead end in the suffix '_bead'. On the other hand you will need to be aware if any of the
+variables contain the string 'bead' somewhere in the variable name without being associated
+with beads (for example, the code would include a variable named beadle).
+
+::: {.callout-tip}
+## Regular expression
+
+It's also possible to construct a regular expression using `matches()`.
+:::
+
+To check which variables we are actually selecting, we can combine our
+selection helper with `select()`.
+
+```{r}
+mortuary_data |>
+  select(ends_with("bead"))
+```
+
+::: {.callout}
+## Exercise
+
+Select all columns with a `Metal` artefact. Then
+calculate the median for the counts grouped
+by `Phase`.
+
+`?dplyr_tidy_select` can help you find selection helpers.
+
+::: {.callout collapse="true"}
+## Solution
+
+```{r}
+mortuary_data |>
+  group_by(Phase) |> 
+  summarise(
+    across(
+        contains("Metal"),
+        ~ median(.x, na.rm = T)
+    )
+  )
+```
+
+**Not all variables have 'Metal' as the first word, so `contains()` is the only way**
+
+By default `contains()` is **case INsensitive**, so here we would
+also include any variables with "metal" in the name. To change this you can add `ignore.case = FALSE`.
+
+:::
+:::
+
+To perform multiple operations on multiple columns, we can use a **list**
+inside `across()`.
+
+```{r}
+mortuary_data |>
+  group_by(Phase) |>
+  summarise(
+    across(
+        ends_with("bead"),
+        list(
+          mean = ~ mean(.x, na.rm = T), 
+          sd = ~ sd(.x, na.rm = T)
+        )
+    )
+  )
+```
+
+Lists are a type of R object that can contain all other
+types of R objects.
+
+For example, here is a list that contains multiple types of objects:
+
+```{r}
+list(
+  "a_vector" = mortuary_data$Width,
+  "a_data_frame" = mortuary_data,
+  "a_function" = mean,
+  "etc" = "etc"
+)
+```
+
+Even with all the selection helpers, there's really no convenient way to calculate the
+mean and standard deviation of artefact counts across all artefacts. We still need to
+use the range of columns.
+
+```{r}
+mortuary_data |>
+  group_by(Phase) |>
+  summarise(
+    across(
+        Agate_bead:Kendi_mouth,
+        list(
+          mean = ~ mean(.x, na.rm = T), 
+          sd = ~ sd(.x, na.rm = T)
+        )
+    )
+  )
+```
+
+Now try to think of a way to create a bar plot that has all the
+bead-related variables.
+
+I haven't included a solution because, to be honest, I'm not sure
+how to go about that. At least not with the data in their current
+form.
+
+The selection helpers make our life easier, but having the artefact
+names as columns is making the visualisation and transformation of
+artefacts unnecessarily complicated.
+
+
+## Tidy data
+
+> "Tidy datasets are all alike, but every messy dataset is messy in its own way.""
+> 
+> -- Hadley Wickham
+
+The concept of tidy data and an early iteration of some tidyverse packages were
+introduced by Hadley Wickham in a [2014 paper](https://doi.org/10.18637/jss.v059.i10).
+Tidy data is now one of the core philosophies of data science. If data structures
+are consistent, it's easier to learn and create a unified set of tools for working
+with the data (such as the tidyverse packages).
+
+A tidy dataset has the following structure:
+
+- Each variable is a column; for example, `Phase` of occupation
+- Each observation is a row
+- Each value is a cell; each cell has a single value
+
+![](/images/tidy-data2.jpg){fig-alt='On the left is a happy cute fuzzy monster holding a rectangular data frame with a tool that fits the data frame shape. On the workbench behind the monster are other data frames of similar rectangular shape, and neatly arranged tools that also look like they would fit those data frames. The workbench looks uncluttered and tidy. The text above the tidy workbench reads "When working with tidy data, we can use the same tools in similar ways for different datasets…" On the right is a cute monster looking very frustrated, using duct tape and other tools to haphazardly tie data tables together, each in a different way. The monster is in front of a messy, cluttered workbench. The text above the frustrated monster reads "...but working with untidy data often means reinventing the wheel with one-time approaches that are hard to iterate or reuse."
+'}
+
+In our dataset we have each burial in a row, i.e., an observation. This is most likely
+because it is the easiest way to enter the data into the spreadsheet, but it arguably
+violates the principle of each row being an observation. And it would be much more useful
+if we had a column with artefact names where we could `filter` or `group_by` artefact,
+which we could then `summarise`.
+
+Enter `pivot_longer()`.
+
+
+## Pivoting
+
+### `pivot_longer()`
+
+If we lengthen the data by creating a column that has the name of artefact
+and another column that has the count, we might have an easier time working with them.
+
+![GIPHY](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ3dic3QyN2g5dzNjbTlheHhpaGwxdXhqcnBjcmx4bDdhaWVoZGU3aCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/oCjCwnuLpiWbfMb1UA/giphy.gif){fig-alt="A GIF with a scene from the TV show Friends where Ross is trying to carry a couch up the stairs and yelling 'Pivot' to get around the corner."}
+
+Because we want to lengthen the data we need the function `pivot_longer()` from
+{tidyr}. The main argument we need is `cols` which we use to specify which column(s)
+we are lengthening.
+We can start with two artefacts to visualise the process.
+
+```{r}
+artefact_long <- mortuary_data |>
+  select(ID, Phase, Agate_bead, Golden_bead) |>
+  pivot_longer(Agate_bead:Golden_bead)
+```
+
+Let's check out the `Golden_bead` variable.
+
+```{r}
+#| eval: false
+artefact_long$Golden_bead
+```
+
+```{r}
+#| echo: false
+try(artefact_long$Golden_bead)
+```
+
+The column `Golden_bead` no longer exists. Instead we have two new 
+columns, `name` and `value` which contain the name
+of our artefact and the count of that artefact for each burial, respectively.
+We also have a data frame with twice as many rows as our original, because
+now each row is an artefact, not a burial.
+
+```{r}
+artefact_long
+```
+
+Now we can apply it to all the artefacts. And to make
+things easier for ourselves we can also use the `names_to` and `values_to`
+arguments to define the names of our new variables instead of using the defaults
+`name` and `value`.
+
+```{r}
+artefact_long <- mortuary_data |>
+  pivot_longer(
+    Agate_bead:Metal_piece, # yes, we still need from x to y, but only once.
+    names_to = "artefact",
+    values_to = "count"
+  )
+```
+
+Now that we have one row per artefact, the data frame is much longer, and some of
+the variables are repeated.
+
+```{r}
+dim(artefact_long)
+```
+
+This allows us to use `summarise` artefact counts without relying on across.
+
+```{r}
+artefact_long |>
+  group_by(artefact) |>
+  summarise(
+    mean = median(count, na.rm = T),
+    sd = sd(count, na.rm = T)
+  )
+```
+
+This is the same as we before, but with simpler code and a more readable output.
+
+:::: {.columns}
+::: {.column width="48%"}
+
+```{r}
+artefact_long |>
+  group_by(artefact, Phase) |>
+  summarise(
+    mean = median(count, na.rm = T),
+    sd = sd(count, na.rm = T)
+  )
+```
+
+:::
+::: {.column width="4%"}
+
+:::
+::: {.column width="48%"}
+
+```{r}
+mortuary_data |>
+  group_by(Phase) |>
+  summarise(
+    across(
+        Agate_bead:Kendi_mouth,
+        list(
+          mean = ~ mean(.x, na.rm = T), 
+          sd = ~ sd(.x, na.rm = T)
+        )
+    )
+  )
+```
+
+:::
+::::
+
+
+Now let's try visualising the artefacts.
+
+```{r}
+artefact_long |>
+  ggplot(aes(x = artefact, y = count)) +
+    geom_col()
+```
+
+Since `IndoPacific_bead` is so dominant, we could remove it.
+
+```{r}
+artefact_long |>
+  filter(artefact != "IndoPacific_bead") |>
+  ggplot(aes(x = artefact, y = count, fill = Phase)) +
+    geom_col()
+```
+
+The large difference in absolute counts still makes it difficult to read
+the plot. It could make more sense to calculate the porportion of
+each artefact within each `Phase`.
+
+```{r}
+percent_artefacts <- artefact_long |>
+  group_by(Phase, artefact) |>
+  summarise(
+    n = sum(count, na.rm = T)
+  ) |>
+  group_by(Phase) |>
+  mutate(percent = (n / sum(n)) * 100)
+  
+ percent_artefacts |>
+  ggplot(aes(x = Phase, y = percent, fill = artefact)) +
+    geom_col()
+```
+
+To break down the above code. We are grouping by `Phase` and `artefact`
+because we want to calculate how many of each `artefact` are in a given
+`Phase`. Then we use `sum` within `summarise()` to do the actual calculation.
+
+```{r}
+artefact_long |>
+  group_by(Phase, artefact) |>
+  summarise(
+    n = sum(count, na.rm = T)
+  )
+```
+
+Then we want to calculate the percentage each artefact makes up of the
+total count of artefacts within each Phase, so this time we only use
+`Phase` as a group and then calculate the percentage.
+
+```{r}
+artefact_long |>
+  group_by(Phase, artefact) |>
+  summarise(
+    n = sum(count, na.rm = T)
+  ) |>
+  group_by(Phase) |>
+  mutate(percent = (n / sum(n)) * 100) 
+```
+
+This gives us the variables we need to produce the plot.
+
+Another solution is to use panels in our plot, where each `artefact` gets it's own
+mini plot.
+
+```{r}
+artefact_long |>
+  ggplot(aes(x = Phase, y = count)) +
+    geom_col() +
+    facet_wrap(~ artefact) # a panel per artefact
+```
+
+Each panel will have the same y-axis limits, which makes it difficult
+to see anything other than `IndoPacific_bead`. Instead we can give each
+panel its own limits based on the values.
+
+```{r}
+#| label: artefact-counts
+artefact_long |>
+  ggplot(aes(x = Phase, y = count, fill = Phase)) +
+    geom_col() +
+    facet_wrap(~ artefact, scales = "free_y")
+```
+
+We could also select specific artefacts we would like to focus on. To do this
+we will need to `filter` the `artefact` column. Since `filter` is not a selecting
+function, we cannot use selection helpers.
+
+```{r}
+#| eval: false
+artefact_long |>
+  filter(contains("metal"))
+```
+
+```{r}
+#| echo: false
+try(
+  artefact_long |>
+    filter(contains("bead"))
+)
+```
+
+Instead we need to rely on a condition that evaluates to `TRUE` or `FALSE`.
+Rather than using `artefact == "name of artefact"` multiple times, we can
+use functions from the [stringr]{.pkg} package to detect patterns. Specifically
+`str_detect()` allows us to identify a string in a variable.
+
+```{r}
+artefact_long |>
+  filter(str_detect(artefact, "bead")) |>
+  ggplot(aes(x = artefact, y = count)) +
+    geom_col()
+```
+
+`str_detect()`, as the name implies, detects whether the string 'bead' exists
+in the `artefact` variable, and returns `TRUE` if it does, and `FALSE` if it
+does not. Exactly what we need for the `filter()` function.
+
+```{r}
+str_detect(artefact_long$artefact, "bead")[1:100] # limit the output to 100 values
+```
+
+The long format of the data also makes it easier to `summarise()` the counts
+of each `artefact` by `Phase`.
+
+```{r}
+summarise(artefact_long,
+          count = sum(count, na.rm = T),
+          .by = c(Phase, artefact))
+```
+
+And we can create a new data frame with the total artefact count for each
+burial.
+
+```{r}
+total_artefact_count <- artefact_long |>
+  group_by(ID, Phase, Age, Gender) |>
+  summarise(
+    total_count = sum(count, na.rm = T)
+  ) |>
+  ungroup()
+```
+
+```{r}
+total_artefact_count
+```
+
+And export it as a *.csv* file to our *data/* folder.
+
+```{r}
+write_csv(total_artefact_count, here("data/total_artefact_count.csv"))
+```
+
+### `pivot_wider()`
+
+The complement to `pivot_longer()` is `pivot_wider()`. We could use it to go back
+to the original data frame. Instead of moving existing column names to a column,
+and existing values to another column, we want to move names **from** a column
+and values **from** another column.
+
+```{r}
+artefact_wide <- artefact_long |>
+  pivot_wider(names_from = artefact, values_from = count)
+```
+
+And we are back to where we started.
+
+```{r}
+dim(artefact_wide) == dim(mortuary_data) # we are testing if this statement is TRUE
+```

@@ -1,0 +1,49 @@
+---
+title: Assignments
+toc: true
+---
+
+## Assignment 1: Case study
+
+Assignment 1 consists of finding, importing, cleaning, and exploring/analysing
+a dataset.
+
+### 1.1 Find, import, clean
+
+Find a dataset that you want to work with, then use a script to download
+and clean the data.
+
+If you can't find a dataset, you can use the full, unmodified version of the
+workshop data here: <https://osf.io/zem9p>
+
+### 1.2 Exploratory data analysis
+
+If the EDA module is included in the workshop, then assignment 1 is extended
+to include EDA. Plot the distribution of at least two types of variables
+that you are interested in exploring further.
+
+Create at least one plot with the relationship between two variables, and
+a summary table with the mean and standard deviation within groupings
+of a variable. <!-- need alternative for cat variables -->
+
+### 1.3 Data modelling
+
+If the data modelling module is taught in the workshop, select at least two
+statistical models to apply to the data.
+
+### 1.4 Communicating results
+
+Use Quarto to communicate the results from the previous sections of assignment 1.
+This can be in the form of a report, short manuscript, presentation, or whatever format in Quarto you prefer.
+
+
+## Assignment 2: Reproduce someone else's code
+
+You will be paired up with another person in the workshop. Send each other your project and try to run the other's code.
+
+Make a note of any issues you encounter, and provide feedback in a document.
+
+Incorporate feedback.
+
+If the workshop includes the collaborative coding module, then this assignment should
+be done with Git and whatever Git hosting platform is preferred (GitHub, GitLab, etc).
