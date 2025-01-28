@@ -2,6 +2,8 @@
 title: Basics of R
 ---
 
+![Artwork by [@allison_horst](https://twitter.com/allison_horst)](https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/646717a5-174f-41a0-b3f4-43bbe7f74efc_rw_1920.png?h=4af7bc29d47b9fbe23bd8783a13e2176){fig-alt='A collaboration with David Keyes: a yound R aardvark, wearing a cape with the words "future R superstar" on it'}
+
 ## Navigating RStudio 
 
 ![](/images/fresh-rstudio.png)

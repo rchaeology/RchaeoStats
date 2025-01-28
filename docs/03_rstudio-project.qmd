@@ -1,5 +1,5 @@
 ---
-title: Getting organised with RStudio Project
+title: Getting organised with RStudio Projects
 ---
 
 RStudio Projects allow you to create self-contained, portable
