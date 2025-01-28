@@ -1,0 +1,407 @@
+---
+title: Basic statistical concepts
+description: A quick introduction to basic statistical concepts
+format: 
+  revealjs: 
+    df-print: paged
+    code-line-numbers: false
+---
+
+```{r}
+#| label: intro-stats-setup
+library(dplyr)
+library(ggplot2)
+sheep_data <- readr::read_csv(here::here("data/sheep-data.csv"))
+```
+
+## Why statistics?
+
+![Kareem Carr via dddrew.com](https://dddrew.com/wp-content/uploads/2021/04/statistics-regression-machinelearning-ai.jpeg)
+
+::: {.right-align}
+Because they're [EVERYWHERE]{.large}
+:::
+
+##
+
+We live in a world of [randomness]{.x-large}
+
+<br>
+
+::: {.right-align}
+Statistics help provide some [strucure]{.large} to the [randomness]{.large}
+
+and allow us to extract useful information
+:::
+
+##
+
+Data are inherently random
+
+If you collect a [sample]{.large .pinkish-red} from a [population]{.large .pinkish-red}
+
+<br>
+
+::: {.right-align}
+Then collect a **second sample** from the **same population**
+
+They are very unlikely to be the same observations  
+[(or measurements)]{.an-aside}
+:::
+
+
+##
+
+::: {.right-align}
+[However]{.large}
+some observations will occur more <br> [frequently]{.large} than others
+:::
+
+
+##
+
+So we can assume that we will observe an outcome a certain number of times
+
+::: {.right-align}
+if an experiment (or analysis) is [repeated]{.large}  
+[(even if we don't actually repeat it)]{.an-aside}
+:::
+
+
+##
+
+This allows us to [estimate parameters]{.x-large .pinkish-red} of a [population]{.x-large .pinkish-red}
+
+::: {.right-align}
+without tediously studying the whole population
+:::
+
+
+##
+
+and the more experiments we conduct  
+
+or the more data we collect
+
+<br>
+
+::: {.right-align}
+the closer we get to the [true parameters]{.large} <!--([Law of Large Numbers]{.large})-->  
+[(as the number approaches infinity)]{.an-aside}
+:::
+
+
+##
+
+This is known as the [Frequentist]{.large .pinkish-red} approach
+
+<br>
+
+::: {.right-align}
+And is the more common approach in most of science  
+[(for now...)]{.an-aside}
+:::
+
+
+##
+
+A [statistic]{.x-large .pinkish-red} is a single value describing a collection of observations (data from a sample)
+
+<br>
+
+Since these observations are not predictable, we can call them a [random variable]{.large .pinkish-red}
+
+
+##
+
+A [statistic]{.large .pinkish-red} is often assigned the generic symbol $\text{T}$
+
+A [random variable]{.large .pinkish-red} is assigned $\text{X}$
+
+<br>
+
+Statistics describing random variables, are themselves random variables (more later)
+
+
+##
+
+For example, measurements taken from a sheep's astragalus
+
+![https://doi.org/10.1101/2022.12.24.521859](https://www.biorxiv.org/content/biorxiv/early/2023/12/06/2022.12.24.521859/F2.large.jpg?width=800&height=600&carousel=1)
+
+::: {.right-align}
+could be considered random variables
+:::
+
+
+##
+
+Let's collect some measurements
+
+. . .
+
+```{r}
+#| echo: false
+#| tbl-cap: "*sheep-data.csv*"
+
+select(sheep_data, !c(Period, Taxon))
+```
+
+
+##
+
+::: {.right-align}
+
+We can describe them in [simpler terms]{.large}
+<br>using [descriptive statistics]{.x-large .pinkish-red}
+
+:::
+
+
+##
+
+We can calculate a [central tendency]{.large .pinkish-red} of the data
+
+
+##
+
+The [arithmetic mean]{.large .pinkish-red} (or 'average') of the ***GLl*** variable is: **`r round(mean(sheep_data$GLl), 2)`**
+
+It is calculated as
+
+$$
+\frac{1}{n} \Sigma_{i=1}^{n} GLl_i
+$$
+
+::: {.right-align}
+Which is a fancy way of writing: all measurements of ***GLl*** added together (sum, or $\Sigma$)
+
+then divided by the number of measurements ***n***, or [sample size]{.large .pinkish-red}
+:::
+
+##
+
+::: {.callout-note icon=false}
+
+## <i class="nf nf-seti-r"></i> Try it in R
+
+```{r}
+#| echo: true
+sum(sheep_data$GLl) / length(sheep_data$GLl)
+mean(sheep_data$GLl)
+```
+
+:::
+
+## 
+
+This is not very useful information in isolation
+
+![GIPHY](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExYzU2NTM3YWJhbTdvbmIyOGU4bWE2aXJibHJ2NjlobTd1c2pkMWVsYiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT5LMAi67OqKlS99Zu/giphy.gif)
+
+::: {.right-align}
+
+[We need more context]{.fragment .x-large .pinkish-red}
+
+:::
+
+##
+
+A question we might ask is
+
+<br>
+
+::: {.right-align}
+
+[how much do the data]{.large}<br>
+[vary]{.large .pinkish-red} [around the]{.large} [mean]{.large .pinkish-red}[?]{.large}
+
+:::
+
+##
+
+We can calculate the difference between
+
+the mean of our sample ($\bar{x}$) and each observation ($x_i$)
+
+and sum
+
+$$
+\sum(x_i - \bar{x})
+$$
+
+. . .
+
+::: {.right-align}
+But that would essentially give us **zero**
+
+because there is roughly an equal number of measurements below and above the mean
+
+[(hence it's a measure of central tendency...)]{.an-aside}
+:::
+
+
+## {#sum-of-squares}
+
+so we **square** the result to remove negative values
+
+$$
+\sum_{i=1}^{n}(x_i - \bar{x})^2
+$$
+
+. . .
+
+::: {.right-align}
+which gives us the<br>
+[sum of squared differences]{.large .pinkish-red}
+:::
+
+
+## {#sum-of-squares-caveat}
+
+::: {.right-align}
+[But]{.x-large .pinkish-red}
+
+[larger samples]{.large} 
+
+will have 
+
+[larger differences]{.large}
+
+making it difficult to compare different-sized samples
+:::
+
+
+## {#variance}
+
+So we divide by sample size, ***n*** (minus 1), to standardise
+
+$$
+s^2 = \frac{\sum_{i=1}^{n}(x_i - \bar{x})^2}{n - 1}
+$$
+
+::: {.right-align}
+and obtain the [variance]{.x-large .pinkish-red} <br> $s^2$
+:::
+
+## 
+
+::: {.callout-note icon=false}
+## <i class="nf nf-seti-r"></i> Try it in R
+
+```{r}
+#| echo: true
+sum((sheep_data$GLl - mean(sheep_data$GLl)) ** 2) / (length(sheep_data$GLl) - 1)
+
+var(sheep_data$GLl)
+```
+
+:::
+
+## {#standard-deviation}
+
+Because we're squaring the differences, the numbers can quickly get unruly
+
+So we can take the **square root** of the [variance]{.pinkish-red}
+
+$$ 
+s = \sqrt{s^2} = \sqrt{\frac{\sum_{i=1}^{n}(x_i - \bar{x})^2}{n - 1}}
+$$
+
+::: {.right-align}
+to get the [standard deviation]{.x-large .pinkish-red} <br> $s$
+:::
+
+
+##
+
+::: {.callout-note icon=false}
+## <i class="nf nf-seti-r"></i> Try it in R
+
+```{r}
+#| echo: true
+#| code-block-bg: false
+#| code-line-numbers: false
+sqrt(var(sheep_data$GLl))
+var(sheep_data$GLl) ** (1/2)
+sd(sheep_data$GLl)
+```
+
+:::
+
+
+##
+
+Combined with the [mean]{.large .pinkish-red}
+
+[standard deviation]{.large .pinkish-red} can say more about our data
+
+<br>
+
+::: {.right-align}
+But for the whole sample this is
+not very informative
+:::
+
+
+##
+
+We could calculate summary statistics across multiple groups
+
+```{r}
+summarise(
+  sheep_data,
+  n = n(),
+  mean = mean(GLl),
+  sd = sd(GLl),
+  .by = Site
+)
+```
+
+But how do we know if the groups differ (or not) in a meaningful way?
+
+
+##
+
+We could run some statistical test
+
+but which one?
+
+::: {.r-stack}
+
+![](https://www.scribbr.com/wp-content/uploads//2020/01/flowchart-for-choosing-a-statistical-test.png){.fragment width="600"}
+
+![](https://miro.medium.com/v2/resize:fit:1100/format:webp/1*NILL_3EnEckFsQ6Hy06EHg.png){.fragment width="800"}
+
+
+![](https://msmccrindle.weebly.com/uploads/1/0/9/2/109204089/statistics-goal-chart_orig.jpeg){.fragment width="600"}
+
+![GIPHY](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExajUzbWRyaDE5cnRybzNoYmdmNzRrazQwdXh2M3E5eW9vMGU1YW4xayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0IylOPCNkiqOgMyA/giphy.gif){.fragment}
+
+:::
+
+
+## {#common-question-2}
+
+**The correct answer:** [It depends...]{.fragment}
+
+
+## 
+
+Primarily it depends on what do your data look like?
+
+![[R for Data Science](https://r4ds.hadley.nz/)](/images/base.png)
+
+
+##
+
+Descriptive statistics only get you so far...
+
+![[{{< fa brands github >}}z3tt/TidyTuesday](https://github.com/z3tt/TidyTuesday)](https://raw.githubusercontent.com/Z3tt/TidyTuesday/main/plots/2020_42/2020_42_Datasaurus.gif)
+
+
+##
+
+We need to [explore]{.x-large .pinkish-red} the data
+
+<!-- go to EDA slides -->

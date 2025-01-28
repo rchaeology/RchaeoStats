@@ -46,6 +46,8 @@ website:
           text: 00 - Welcome
         - href: slides/content/01_rstudio-project.qmd
           text: 01 - RStudio Projects
+        - href: slides/content/02_stats-basics.qmd
+          text: 02 - Stats Basics
 
 format:
   html:
