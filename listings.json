@@ -2,6 +2,7 @@
   {
     "listing": "/slides/index.html",
     "items": [
+      "/slides/content/02_stats-basics.html",
       "/slides/content/00_welcome.html",
       "/slides/content/01_rstudio-project.html"
     ]
