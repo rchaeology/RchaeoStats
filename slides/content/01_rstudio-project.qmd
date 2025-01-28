@@ -1,5 +1,6 @@
 ---
-title: RStudio Project
+title: RStudio Projects
+description: A brief introduction to organising a project with RStudio Projects
 format: 
   revealjs: 
     navigation-mode: linear
@@ -13,7 +14,7 @@ Well begun is half done
 
 ![GIPHY](https://media.giphy.com/media/Hu6zl8U7QdzPy/giphy.gif)
 
-## RStudio Project
+## RStudio Project {.smaller}
 
 The best way to organise a project is using an RStudio Project.
 
