@@ -32,12 +32,12 @@ website:
           text: 03 - Getting Organised
         - href: docs/04_cleaning-data.qmd
           text: 04 - Cleaning Data
-        - section: EDA
+        - section: Understand
         - href: docs/05_visualising-data.qmd
           text: 05 - Visualising Data
         - href: docs/06_transforming-data.qmd
           text: 06 - Transforming Data
-        - section: Extensions
+        - section: Communicate
         - href: docs/08_communicating-results.qmd
           text: 08 - Communicating Results
       - section: Slides
