@@ -1,0 +1,712 @@
+---
+title: Exploratory Data Analysis (EDA)
+description: Visualising data with plots
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(forcats)
+sheep_data <- readr::read_csv(here::here("data/sheep-data.csv"))
+```
+
+## 
+
+[EDA]{.x-large .pinkish-red} is possibly the
+
+::: {.right-align}
+[single most important concept]{.large}
+
+when working with data
+:::
+
+
+##
+
+Popularised by John Tukey in his 1977 textbook, *Exploratory Data Analysis*
+
+> A basic problem about any body of data is to make it more easily and effectively handleable by minds---our minds,
+> her mind, his mind[, their mind].
+>
+> John Tukey
+
+
+##
+
+Find the main characteristics of your data through
+
+::: {.right-align}
+[descriptive statistics]{.large} <br> and <br> [visualisations]{.large}
+:::
+
+
+##
+
+You should explore your data before doing anything else
+
+. . .
+
+![GIPHY](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExaDd3cWRkZGVvb2JoNWZkMHM2cXZuOW9xZXhxMTUwbGs3ZnpxYWZucSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/XvZ8PJ4DSqzSM/giphy.gif){fig-alt="A scene from the Disney movie, Lady and the Tramp. Lady and the Tramp are seated at a small table, facing away from each other. They each take bites of the same long strand of spaghetti. As they chew, they inadvertently lean in, and their lips meet in a kiss"}
+
+. . .
+
+::: {.right-align}
+Really get to know them...
+:::
+
+<!-- move into comparing means and t test or other data types, median, mode, etc? -->
+
+
+##
+
+We can [visualise]{.large .pinkish-red} how a variable 
+
+```{r}
+#| label: histogram
+ggplot(sheep_data, aes(x = Dl)) + 
+  geom_histogram(binwidth = 0.5, col = "white") +
+  theme_minimal()
+```
+
+::: {.right-align}
+
+is [distributed]{.large} with a [histogram]{.large .pinkish-red}
+
+:::
+
+
+## 
+
+In [histograms]{.large .pinkish-red}
+
+```{r}
+ggplot(sheep_data, aes(x = Dl)) + 
+  geom_histogram(binwidth = 0.5, col = "white") +
+  theme_minimal()
+```
+
+::: {.right-align}
+measurements are placed in [bins]{.large} of a certain size
+:::
+
+##
+
+For example, all measurements from 13.79-14.29 are in the
+first bin
+
+```{r}
+  sheep_data |>
+  mutate(
+    grp = cut(Dl, seq(min(sheep_data$Dl), max(sheep_data$Dl) + 0.1, by = 0.49), labels = FALSE, include.lowest = TRUE),
+    highlight = if_else(grp < 3, TRUE, FALSE)
+  ) |> #_$grp
+  ggplot(aes(x = Dl, fill = highlight)) + 
+    geom_histogram(binwidth = 0.5, col = "white", show.legend = FALSE) +
+    scale_fill_manual(values = c("gray35", viridisLite::viridis(1, begin = 0.6))) +
+    theme_minimal()
+```
+
+::: {.right-align}
+14.29-14.79 are in the second, etc...
+:::
+
+
+##
+
+The height of the bin is determined by how many observations are placed
+in the bins
+
+```{r}
+ggplot(sheep_data, aes(x = Dl)) + 
+  geom_histogram(binwidth = 0.5, col = "white") +
+  stat_bin(
+    binwidth=0.5,
+    geom='text',
+    colour = "white",
+    size=6,
+    aes(label=after_stat(count)), position=position_stack(vjust=0.5)) +
+  theme_minimal()
+```
+
+::: {.right-align}
+which allows us to see where most observations lie
+:::
+
+
+## 
+
+We can also separate the groups
+
+```{r}
+ggplot(sheep_data, aes(x = Dl, fill = Zone)) +
+  geom_histogram(
+    binwidth = 0.5, 
+    col = "white", 
+    alpha = 0.8,
+    show.legend = FALSE
+  ) +
+  scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+  theme_minimal() +
+  facet_wrap(~ Zone, ncol = 1)
+```
+
+##
+
+the [**mean**]{style="color: #d1295a"} is not always aligned with the most observations
+
+```{r}
+sheep_means <- summarise(
+  sheep_data, 
+  dl_mean = mean(Dl),
+  dl_sd = sd(Dl),
+  dl_var = var(Dl),
+  dl_median = median(Dl),
+  dl_range = diff(range(Dl)),
+  .by = Zone)
+ggplot(sheep_data, aes(x = Dl, fill = Zone)) +
+  geom_histogram(
+    binwidth = 0.5, 
+    col = "white", 
+    alpha = 0.8,
+    show.legend = FALSE
+  ) +
+  scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+  facet_wrap(~ Zone, ncol = 1) +
+  geom_vline(data = sheep_means, aes(xintercept = dl_mean), linewidth = 1, linetype = "dashed", col = "#d1295a") +
+  theme_minimal()
+```
+
+<!-- already introduce median? or wait till non-parametric? 
+## Histograms
+
+-->
+
+##
+
+If a distribution is skewed, the [**mean**]{style="color: #d1295a;"} moves off center
+
+```{r}
+ggplot(sheep_data, aes(x = Dl, fill = Zone)) +
+  geom_histogram(
+    binwidth = 0.5,
+    col = "white",
+    alpha = 0.8,
+    show.legend = FALSE
+  ) +
+  facet_wrap(~ Zone, ncol = 1) +
+  scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+  geom_vline(data = sheep_means, aes(xintercept = dl_mean), linewidth = 1, linetype = "dashed", col = "#d1295a") +
+  geom_vline(data = sheep_means, aes(xintercept = dl_median), linewidth = 1, linetype = "dotted", col = "#782386") +
+  theme_minimal()
+```
+
+::: {.right-align}
+and the [**median**]{style="color: #782386;"} is closer to the most observations
+:::
+
+
+## {.smaller auto-animate=true}
+
+The width of a plot is not a great indicator of dispersion  
+It's more of a combination between width and height
+
+
+```{r}
+ggplot(sheep_data, aes(x = Dl, fill = Zone)) +
+  geom_histogram(
+    binwidth = 0.5,
+    col = "white",
+    show.legend = F,
+    alpha = 0.8
+  ) +
+  scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+  facet_wrap(~ Zone, ncol = 1) +
+  #geom_segment(data = sheep_means, aes(x = 15, xend = 15 + dl_var, y = 5)) +
+  geom_text(data = sheep_means, aes(label = paste("variance =", round(dl_var, 2)), x = 19.6, y = 15)) +
+  geom_text(data = sheep_means, aes(label = paste("range =", round(dl_range, 2)), x = 19.6, y = 12)) +
+  theme_minimal() +
+  labs(y = "count")
+```
+
+::: {.right-align}
+Tall and narrow = low dispersion (small variance)  
+Short and wide = high dispersion (large variance)
+:::
+
+##
+
+[Box plots]{.large .pinkish-red} (a.k.a., box and whiskers)
+
+```{r}
+#| label: boxplot
+ggplot(sheep_data, aes(x = Zone, y = Dl, fill = Zone)) +
+  geom_boxplot(show.legend = F, alpha = 0.8) +
+  scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_line(linewidth = 0.2),
+    panel.grid.minor.y = element_line(linewidth = 0.1),
+    panel.grid.major.x = element_blank()
+  )
+```
+
+::: {.right-align}
+
+are a better indicator of [dispersion]{.large .pinkish-red}
+
+:::
+
+
+##
+
+They give us the [quartiles]{.large}
+
+```{r}
+inland_data <- filter(sheep_data, Zone == "Inland")
+coastal_data <- filter(sheep_data, Zone == "Coastal")
+ggplot(sheep_data, aes(x = Zone, y = Dl, fill = Zone)) +
+  geom_boxplot(
+    show.legend = F,
+    outlier.colour = NA,
+    alpha = 0.8,
+    coef = 0,
+    linewidth = 0
+  ) +
+  geom_hline(aes(yintercept = quantile(inland_data$Dl)["25%"]), linewidth = 0.8, col = "#d1295a", linetype = "dashed") +
+  geom_hline(aes(yintercept = quantile(coastal_data$Dl)["25%"]), linewidth = 0.8, col = "#d1295a", linetype = "dashed") +
+  geom_hline(aes(yintercept = quantile(inland_data$Dl)["75%"]), linewidth = 0.8, col = "#782386", linetype = "dotted") +
+  geom_hline(aes(yintercept = quantile(coastal_data$Dl)["75%"]), linewidth = 0.8, col = "#782386", linetype = "dotted") +
+  scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_line(linewidth = 0.2),
+    panel.grid.minor.y = element_line(linewidth = 0.1),
+    panel.grid.major.x = element_blank()
+  )
+```
+
+::: {.right-align}
+[**25%**]{.large .pinkish-red} (dashed) and [**75%**]{.large .purple} (dotted)
+:::
+
+
+##
+
+[median]{.large} 
+
+```{r}
+ggplot(sheep_data, aes(x = Zone, y = Dl, fill = Zone)) +
+  geom_boxplot(
+    show.legend = F,
+    outlier.colour = NA,
+    alpha = 0.8,
+    coef = 0
+  ) +
+  geom_hline(aes(yintercept = quantile(inland_data$Dl)["50%"]), linewidth = 0.8, linetype = "dashed") +
+  geom_hline(aes(yintercept = quantile(coastal_data$Dl)["50%"]), linewidth = 0.8, linetype = "dashed") +
+  scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_line(linewidth = 0.2),
+    panel.grid.minor.y = element_line(linewidth = 0.1),
+    panel.grid.major.x = element_blank()
+  )
+```
+
+<br>
+
+##
+
+[whiskers]{.large .pinkish-red}
+
+```{r}
+ggplot(sheep_data, aes(x = Zone, y = Dl, fill = Zone)) +
+  stat_boxplot(
+    geom = "errorbar",
+    colour = "red",
+    width = 0,
+    position = position_dodge(0.75)
+  ) +
+  geom_boxplot(
+    show.legend = FALSE,
+    outlier.colour = NA,
+    alpha = 0.8,
+    coef = FALSE
+  ) +
+  scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_line(linewidth = 0.2),
+    panel.grid.minor.y = element_line(linewidth = 0.1),
+    panel.grid.major.x = element_blank()
+  )
+```
+
+<br>
+
+
+##
+
+and [outliers]{.large .pinkish-red}
+
+```{r}
+ggplot(sheep_data, aes(x = Zone, y = Dl, fill = Zone)) +
+  geom_boxplot(
+    show.legend = F,
+    outlier.colour = "#d1295a",
+    alpha = 0.8
+  ) +
+  scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_line(linewidth = 0.2),
+    panel.grid.minor.y = element_line(linewidth = 0.1),
+    panel.grid.major.x = element_blank()
+  )
+```
+
+<br>
+
+## {.smaller}
+
+The length of the box is the **Inter-Quartile Range (IQR)**  
+calculated as the 75% quartile minus 25% quartile
+
+```{r}
+ggplot(sheep_data, aes(x = Zone, y = Dl, fill = Zone)) +
+  geom_boxplot(
+    show.legend = F,
+    alpha = 0.8
+  ) +
+  scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_line(linewidth = 0.2),
+    panel.grid.minor.y = element_line(linewidth = 0.1),
+    panel.grid.major.x = element_blank()
+  )
+```
+
+::: {.right-align}
+Length of the whiskers are 1.5 times the **IQR**  
+**Outliers** are points falling outside the whiskers
+:::
+
+
+## {background-image="/images/boxplots-hide.png" background-position="right" background-size="40%"}
+
+<br>
+
+Box plots are not perfect, though
+
+They hide the shape of the distribution, 
+
+and the number of observations
+
+<br><br>
+
+::: {.right-align}
+
+[[Artwork by @allison_horst.](https://twitter.com/allison_horst)]{style='font-size: 0.8rem;'}
+
+:::
+
+##
+
+We could combine with a histogram
+
+```{r}
+#| label: boxplot-histogram
+ggplot(sheep_data, aes(x = Dl, fill = Zone)) +
+  geom_histogram(binwidth = 0.5, col = "white", alpha = 0.8) +
+  geom_boxplot(width = 1.4) +
+  facet_wrap(~ Zone, ncol = 1) +
+  scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+
+##
+
+or use a [violin plot]{.large .pinkish-red}
+
+```{r}
+#| label: violin-plot
+ggplot(sheep_data, aes(x = Zone, y = Dl, fill = Zone)) +
+  geom_violin(alpha = 0.8, show.legend = FALSE) +
+  scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+  theme_minimal()
+```
+
+##
+
+combined with a [box plot]{.large .pinkish-red}
+
+```{r}
+ggplot(sheep_data, aes(x = Zone, y = Dl, fill = Zone)) +
+  geom_violin(alpha = 0.8, show.legend = FALSE) +
+  geom_boxplot(width = 0.2, fill = "white") +
+  scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+  theme_minimal()
+```
+
+
+##
+
+Violin plots consist of mirrored [density plots]{.large .pinkish-red}
+
+```{r}
+ggplot(sheep_data, aes(x = Dl, fill = Zone)) +
+  geom_density(alpha = 0.8) +
+  geom_density(aes(y = -..density..), alpha = 0.4) +
+  facet_wrap(~ Zone, ncol = 1) +
+  scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(y = "density")
+```
+
+
+##
+
+A [density plot]{.large .pinkish-red} is a 'smoothed' histogram
+
+```{r}
+#| label: density-plot
+ggplot(sheep_data, aes(x = Dl, fill = Zone)) +
+  geom_density(alpha = 0.8) +
+  scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+  facet_wrap(~ Zone, ncol = 1) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+::: {.right-align}
+calculated using a **Kernal Density Estimate**
+:::
+
+
+## {.smaller}
+
+The area under the curve is always 1, because the
+
+the probability of all the values cannot exceed 1
+
+```{r}
+ggplot(coastal_data, aes(x = Dl)) +
+  geom_density(fill = viridisLite::viridis(1, begin = 0.2), alpha = 0.8) +
+  geom_density(
+    data = inland_data, 
+    aes(x = Dl, y = -..density..), 
+    fill = viridisLite::viridis(1, begin = 0.8), 
+    alpha = 0.8
+  ) +
+  geom_vline(xintercept = 15.4, linetype = "dashed") +
+#  geom_text() +
+  annotate("text", label = "15.4", y = -0.02, x = 15.1, col = "white") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(y = "density")
+```
+
+::: {.right-align}
+A point on the curve is the [estimated probability density]{.large}
+:::
+
+
+## 
+
+[Categorical]{.large .pinkish-red} variables
+require different types of plots
+
+
+##
+
+Like [bar plots]{.large .pinkish-red}
+
+```{r}
+#| label: barplot
+sheep_data |>
+  ggplot(aes(x = group)) +
+    geom_bar() +
+    theme_minimal() +
+    theme(panel.grid.major.x = element_blank()) +
+    labs(x = "Group")
+```
+
+::: {.right-align}
+Which simply show counts of values
+:::
+
+
+##
+
+[Gridlines]{.large .pinkish-red}
+
+```{r}
+sheep_data |>
+  ggplot(aes(x = group)) +
+    geom_bar() +
+    theme_minimal() +
+    theme(
+      panel.grid.major.y = element_line(colour = "#d1295a", linewidth = 2),
+      panel.grid.major.x = element_blank()
+    ) +
+    labs(x = "Group")
+```
+
+::: {.right-align}
+allow readers to see the actual values
+:::
+
+##
+
+[Pie charts]{.large .pinkish-red} can also show this
+
+```{r}
+#| label: pie-chart
+sheep_data |>
+  ggplot(aes(x = "", fill = group)) +
+    geom_bar(width = 1, col = "white") +
+    coord_polar("y", start = 0) +
+    scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+    theme_void() +
+    labs(fill = "Group")
+```
+
+::: {.right-align}
+But should be used sparingly...
+:::
+
+
+##
+
+[Pie charts]{.large .pinkish-red} And if you like it
+
+```{r}
+sheep_data |>
+  group_by(group) |>
+  count() |>
+  ungroup() |>
+  mutate(prop = (n / sum(n))) |>
+  ggplot(aes(x = "", y = prop, fill = group, label = scales::percent(prop))) +
+    geom_bar(stat = "identity", width = 1, col = "white") +
+    geom_label(position = position_stack(vjust = 0.5), col = "white", show.legend = F, label.size = 0.4, size = 6) +
+    coord_polar("y", start = 0) +
+    scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+    theme_void() +
+    labs(fill = "Group")
+```
+
+::: {.right-align}
+you better put a label on it
+:::
+
+
+##
+
+[Bar plot]{.large .pinkish-red} axes can be rearranged to improve interpretation
+
+```{r}
+sheep_data |>
+  ggplot(aes(x = fct_rev(fct_infreq(group)))) +
+    geom_bar() +
+    coord_flip() +
+    theme_minimal() +
+    theme(panel.grid.major.y = element_blank()) +
+    labs(x = "Group")
+```
+
+::: {.right-align}
+For example, ordered by frequency
+:::
+
+
+##
+
+Show multiple variables
+
+```{r}
+sheep_data |>
+  ggplot(aes(x = fct_rev(fct_infreq(group)), fill = Period)) +
+    geom_bar() +
+    scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+    theme_minimal() +
+    theme(panel.grid.major.x = element_blank()) +
+    labs(x = "Group")
+```
+
+stacked
+
+##
+
+Show multiple variables
+
+```{r}
+sheep_data |>
+  ggplot(aes(x = fct_rev(fct_infreq(group)), fill = Period)) +
+    geom_bar(position = "dodge") +
+    scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+    theme_minimal() +
+    theme(panel.grid.major.x = element_blank()) +
+    labs(x = "Group")
+```
+
+side-by-side
+
+
+##
+
+Show multiple variables
+
+```{r}
+sheep_data |>
+  ggplot(aes(x = fct_rev(fct_infreq(group)), fill = Period)) +
+    geom_bar(position = "fill") +
+    scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+    theme_minimal() +
+    theme(panel.grid.major.x = element_blank()) +
+    labs(x = "Group")
+```
+
+proportional
+
+
+##
+
+Whatever you intend to do with your data
+
+::: {.right-align}
+first make sure you know what they look like
+:::
+
+
+##
+
+This will help you interpret your data
+
+
+## Tips for data visualistions {.smaller}
+
+[LABEL YOUR AXES]{.large}
+
+Avoid redundant information
+
+Avoid information overload
+
+Figures should be able to stand alone
+
+Keep colour-deficient vision in mind
+
+[LABEL YOUR AXES]{.large}
+
+<br>
+
+[Royal Statistical Society Data Visualisation Guide](https://royal-statistical-society.github.io/datavisguide/)  
+[Friends don't let friends make bad graphs](https://github.com/cxli233/FriendsDontLetFriends)
+
+![](https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/1dbd79e3-5911-41e5-9a42-8599988e63cd_rw_1920.jpg?h=0f40e74d73f8150fe302220814fb0c19){.absolute right="0" top="60" width="46%" fig-alt='An adult pie chart holding a briefcase, coming home from a successful job interview. She says "I got the gig. They said I was the right one for the job." Her family (another adult pie chart and two pie chart children) come sprinting toward her, arms outstretched and looking elated.'}
+
+<!-- after data viz, go to sampling distributions? -->
+

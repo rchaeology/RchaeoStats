@@ -48,6 +48,8 @@ website:
           text: 01 - RStudio Projects
         - href: slides/content/02_stats-basics.qmd
           text: 02 - Stats Basics
+        - href: slides/content/03_EDA.qmd
+          text: 03 - EDA
 
 format:
   html:
