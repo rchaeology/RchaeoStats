@@ -30,6 +30,8 @@ workshops of varying durations and customised to suit the participants' needs.
 The core module contains an introduction to R and RStudio, an example workflow, and
 data import and cleaning.
 
+Durations are rough estimates.
+
 | Component | Description | Materials | Duration |
 |----|----|----|----|
 | Setup | Installation of R and RStudio | [00 - Getting Started](/docs/00_install-r-rstudio.qmd) | Unknown |
@@ -43,8 +45,8 @@ data import and cleaning.
 
 | Component | Description | Materials | Duration |
 |----|----|----|----|
-| Visualising Data | Visualising the cleaned data with [ggplot2]{.pkg}  | Code-along: [05 - Visualising Data](/docs/05_visualising-data.qmd) | Unknown |
-| Transforming Data | Transforming the cleaned data with [dplyr]{.pkg}  | Code-along: [06 - Transforming Data](/docs/06_transforming-data.qmd) | Unknown |
+| Visualising Data | Visualising the cleaned data with [ggplot2]{.pkg}  | Code-along: [05 - Visualising Data](/docs/05_visualising-data.qmd) | ~100 mins |
+| Transforming Data | Transforming the cleaned data with [dplyr]{.pkg}  | Code-along: [06 - Transforming Data](/docs/06_transforming-data.qmd) | ~120 mins |
 
 ### Communicate
 

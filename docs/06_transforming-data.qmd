@@ -57,7 +57,7 @@ select(mortuary_data, Golden_bead)
 # multiple names
 select(mortuary_data, Golden_bead, Glass_bead)
 # or (as before) position
-select(mortuary_data, c(22,23))
+select(mortuary_data, 22,23)
 ```
 
 
@@ -115,7 +115,26 @@ filter(mortuary_data, start_layer > 5 & start_layer <= 12) # only values that ar
 filter(mortuary_data, start_layer > 5 | start_layer < 12) # only values that are greater than 5 OR (|) less than 12
 ```
 
-This could be combined with `select()` to only show the relevant columns.
+Using filter combined with the function `is.na()`, we can remove missing values. `is.na()` gives us a
+Boolean vector where all `NA`s are `TRUE` and everything else is `FALSE`. 
+
+```{r}
+is.na(mortuary_data$Phase)
+```
+
+This is the exact opposite of what we want, so we can negate the output of the function with `!`
+
+```{r}
+!is.na(mortuary_data$Phase)
+```
+
+essentially giving 'is NOT na', which we can use in `filter()`.
+
+```{r}
+filter(mortuary_data, !is.na(Phase))
+```
+
+`filter()` can be combined with `select()` to only show the columns we're interested in viewing.
 
 ```{r}
 select(filter(mortuary_data, Phase == "pre"), ID, Golden_bead, Small_Metal_ring)
@@ -135,17 +154,17 @@ select(pre_euro, ID, Golden_bead, Small_Metal_ring)
 Filtering on multiple variables:
 
 ```{r}
-pre_euro_cond2 <- filter(mortuary_data, 
+pre_euro_cond <- filter(mortuary_data, 
                         Phase == "pre",
                         Condition == 2)
-pre_euro_cond2_select <- select(pre_euro_cond2, ID, Golden_bead, Small_Metal_ring)
+pre_euro_cond_select <- select(pre_euro_cond, ID, Golden_bead, Small_Metal_ring)
 ```
 
 Mean golden beads for Pit P061 with Condition 2 (partially disturbed).
 
 ```{r}
-mean(pre_euro_cond2_select$Golden_bead, na.rm = T)
-mean(pre_euro_cond2_select$Small_Metal_ring, na.rm = T)
+mean(pre_euro_cond_select$Golden_bead, na.rm = T)
+mean(pre_euro_cond_select$Small_Metal_ring, na.rm = T)
 ```
 
 ::: {.callout-tip}
@@ -162,7 +181,7 @@ give you a message informing you how many missing values/rows were removed.
 If we wanted to also calculate the mean for the other conditions, we could repeat the
 above steps for `Condition == 1` and `Condition == 3`, but that would quickly get tedious.
 There is an easier way to calculate multiple means and other descriptive statistics using
-the `summarise()` and `group_by` functions from {dplyr}.
+the `summarise()` and `group_by` functions from [dplyr]{.pkg}.
 
 
 ## Groups
@@ -228,7 +247,6 @@ use `group_by` function
 mortuary_data |>
   group_by(Phase) |>
   summarise(
-    mortuary_data,
     mean_golden = mean(Golden_bead, na.rm = T),
     median_golden = median(Golden_bead, na.rm = T),
     sd_golden = sd(Golden_bead, na.rm = T)
@@ -250,7 +268,7 @@ summarise(
 ::: {.callout-note}
 
 The values `NaN` (Not a Number) mean that there were no values in `Phase` that
-could be calculated. 
+could be calculated (all values were `NA`).
 
 :::
 
@@ -410,9 +428,8 @@ mortuary_data |>
 ::: {.callout}
 ## Exercise
 
-Select all columns with a `Metal` artefact. Then
-calculate the median for the counts grouped
-by `Phase`.
+Select all columns with a `Metal` artefact. Then calculate the median for the counts
+grouped by `Phase`.
 
 `?dplyr_tidy_select` can help you find selection helpers.
 
@@ -461,13 +478,41 @@ types of R objects.
 For example, here is a list that contains multiple types of objects:
 
 ```{r}
-list(
+my_list <- list(
   "a_vector" = mortuary_data$Width,
   "a_data_frame" = mortuary_data,
   "a_function" = mean,
   "etc" = "etc"
 )
+my_list
 ```
+
+Indexing a list is similar to a data frame, but with a subtle difference. Like data frames,
+we can index by name of the item:
+
+```{r}
+my_list$a_vector # to get the vector
+my_list$a_function # to get the function
+```
+
+or by position.
+
+```{r}
+my_list[1] # first list item (the vector)
+```
+
+**NOTE** that the item we indexed is still a list object.
+
+```{r}
+class(my_list[1])
+```
+
+To get the actual vector, we need to use
+
+```{r}
+my_list[[1]] # the vector contained within the first list item
+```
+
 
 Even with all the selection helpers, there's really no convenient way to calculate the
 mean and standard deviation of artefact counts across all artefacts. We still need to
@@ -654,13 +699,24 @@ Since `IndoPacific_bead` is so dominant, we could remove it.
 ```{r}
 artefact_long |>
   filter(artefact != "IndoPacific_bead") |>
-  ggplot(aes(x = artefact, y = count, fill = Phase)) +
+  ggplot(aes(x = artefact, y = count)) +
+    geom_col()
+```
+
+Then we can add the `Phase` variable to the visualisation. It probably makes the most sense to have
+`Phase` on the x-axis, and `artefact` as the colour (or, rather, `fill`), since we can then see
+what proportion each artefact makes up within each `Phase` of occupation.
+
+```{r}
+artefact_long |>
+  filter(artefact != "IndoPacific_bead") |>
+  ggplot(aes(x = Phase, y = count, fill = artefact)) +
     geom_col()
 ```
 
 The large difference in absolute counts still makes it difficult to read
-the plot. It could make more sense to calculate the porportion of
-each artefact within each `Phase`.
+the plot, especially the `Phase`s with fewest artefacts. It would make more sense to calculate the proportion
+(or percentage) of each artefact within each `Phase`.
 
 ```{r}
 percent_artefacts <- artefact_long |>
@@ -722,7 +778,7 @@ panel its own limits based on the values.
 #| label: artefact-counts
 artefact_long |>
   ggplot(aes(x = Phase, y = count, fill = Phase)) +
-    geom_col() +
+    geom_col(show.legend = FALSE) + # we don't need the legend because the Phase values are on the x-axis
     facet_wrap(~ artefact, scales = "free_y")
 ```
 
