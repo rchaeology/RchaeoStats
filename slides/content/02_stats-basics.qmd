@@ -70,7 +70,10 @@ if an experiment (or analysis) is [repeated]{.large}
 
 ##
 
-This allows us to [estimate parameters]{.x-large .pinkish-red} of a [population]{.x-large .pinkish-red}
+This allows us to
+
+[estimate parameters]{.x-large .pinkish-red} of a  
+[population]{.x-large .pinkish-red}
 
 ::: {.right-align}
 without tediously studying the whole population
