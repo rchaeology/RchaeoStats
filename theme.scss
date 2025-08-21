@@ -25,3 +25,7 @@ $font-family-sans-serif: "Atkinson Hyperlegible";
 .sidebar-item {
     color: white;
 }
+
+.cell-output code {
+    color: rgba($navy, 0.6);
+}
