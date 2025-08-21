@@ -1,63 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://rchaeology.github.io/RchaeoStats/docs/06_transforming-data.html</loc>
-    <lastmod>2025-02-28T19:39:54.830Z</lastmod>
+    <loc>https://rchaeology.github.io/RchaeoStats/index.html</loc>
+    <lastmod>2025-08-21T13:29:06.520Z</lastmod>
   </url>
   <url>
     <loc>https://rchaeology.github.io/RchaeoStats/docs/03_rstudio-project.html</loc>
-    <lastmod>2025-02-28T19:39:54.830Z</lastmod>
-  </url>
-  <url>
-    <loc>https://rchaeology.github.io/RchaeoStats/docs/00_install-r-rstudio.html</loc>
-    <lastmod>2025-02-28T19:39:54.830Z</lastmod>
+    <lastmod>2025-08-21T13:29:06.514Z</lastmod>
   </url>
   <url>
     <loc>https://rchaeology.github.io/RchaeoStats/docs/04_cleaning-data.html</loc>
-    <lastmod>2025-02-28T19:39:54.830Z</lastmod>
+    <lastmod>2025-08-21T13:29:06.514Z</lastmod>
   </url>
   <url>
-    <loc>https://rchaeology.github.io/RchaeoStats/assignments.html</loc>
-    <lastmod>2025-02-28T19:39:54.828Z</lastmod>
-  </url>
-  <url>
-    <loc>https://rchaeology.github.io/RchaeoStats/slides/content/01_rstudio-project.html</loc>
-    <lastmod>2025-02-28T19:39:54.837Z</lastmod>
-  </url>
-  <url>
-    <loc>https://rchaeology.github.io/RchaeoStats/slides/content/03_EDA.html</loc>
-    <lastmod>2025-02-28T19:39:54.837Z</lastmod>
-  </url>
-  <url>
-    <loc>https://rchaeology.github.io/RchaeoStats/index.html</loc>
-    <lastmod>2025-02-28T19:39:54.837Z</lastmod>
-  </url>
-  <url>
-    <loc>https://rchaeology.github.io/RchaeoStats/slides/index.html</loc>
-    <lastmod>2025-02-28T19:39:54.838Z</lastmod>
-  </url>
-  <url>
-    <loc>https://rchaeology.github.io/RchaeoStats/slides/content/02_stats-basics.html</loc>
-    <lastmod>2025-02-28T19:39:54.837Z</lastmod>
-  </url>
-  <url>
-    <loc>https://rchaeology.github.io/RchaeoStats/slides/content/00_welcome.html</loc>
-    <lastmod>2025-02-28T19:39:54.837Z</lastmod>
+    <loc>https://rchaeology.github.io/RchaeoStats/docs/06_transforming-data.html</loc>
+    <lastmod>2025-08-21T13:29:06.514Z</lastmod>
   </url>
   <url>
     <loc>https://rchaeology.github.io/RchaeoStats/docs/08_communicating-results.html</loc>
-    <lastmod>2025-02-28T19:39:54.831Z</lastmod>
+    <lastmod>2025-08-21T13:29:06.514Z</lastmod>
+  </url>
+  <url>
+    <loc>https://rchaeology.github.io/RchaeoStats/slides/content/00_welcome.html</loc>
+    <lastmod>2025-08-21T13:29:06.522Z</lastmod>
+  </url>
+  <url>
+    <loc>https://rchaeology.github.io/RchaeoStats/slides/content/03_EDA.html</loc>
+    <lastmod>2025-08-21T13:29:06.522Z</lastmod>
+  </url>
+  <url>
+    <loc>https://rchaeology.github.io/RchaeoStats/assignments.html</loc>
+    <lastmod>2025-08-21T13:29:06.512Z</lastmod>
+  </url>
+  <url>
+    <loc>https://rchaeology.github.io/RchaeoStats/slides/content/01_rstudio-project.html</loc>
+    <lastmod>2025-08-21T13:29:06.522Z</lastmod>
+  </url>
+  <url>
+    <loc>https://rchaeology.github.io/RchaeoStats/slides/content/02_stats-basics.html</loc>
+    <lastmod>2025-08-21T13:29:06.522Z</lastmod>
+  </url>
+  <url>
+    <loc>https://rchaeology.github.io/RchaeoStats/slides/index.html</loc>
+    <lastmod>2025-08-21T13:29:06.522Z</lastmod>
+  </url>
+  <url>
+    <loc>https://rchaeology.github.io/RchaeoStats/docs/00_install-r-rstudio.html</loc>
+    <lastmod>2025-08-21T13:29:06.513Z</lastmod>
   </url>
   <url>
     <loc>https://rchaeology.github.io/RchaeoStats/docs/02_workflow.html</loc>
-    <lastmod>2025-02-28T19:39:54.830Z</lastmod>
+    <lastmod>2025-08-21T13:29:06.513Z</lastmod>
   </url>
   <url>
     <loc>https://rchaeology.github.io/RchaeoStats/docs/01_r-basics.html</loc>
-    <lastmod>2025-02-28T19:39:54.830Z</lastmod>
+    <lastmod>2025-08-21T13:29:06.513Z</lastmod>
   </url>
   <url>
     <loc>https://rchaeology.github.io/RchaeoStats/docs/05_visualising-data.html</loc>
-    <lastmod>2025-02-28T19:39:54.830Z</lastmod>
+    <lastmod>2025-08-21T13:29:06.514Z</lastmod>
   </url>
 </urlset>

@@ -6,8 +6,8 @@
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.6.42">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.33">
 
   <title>RchaeoStats – Exploratory Data Analysis (EDA)</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -28,7 +28,7 @@
       vertical-align: middle;
     }
   </style>
-  <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-77c9a909e6561de3af8a3065a8129003.css">
+  <link rel="stylesheet" href="../../site_libs/revealjs/dist/theme/quarto-89373627dcc3b72a9f6412169d8253fd.css">
   <link href="../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -185,7 +185,7 @@
 <h2></h2>
 <p>In <span class="large pinkish-red">histograms</span></p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"><div class="right-align">
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"><div class="right-align">
 <p>measurements are placed in <span class="large">bins</span> of a certain size</p>
 </div>
 </section>
@@ -193,7 +193,7 @@
 <h2></h2>
 <p>For example, all measurements from 13.79-14.29 are in the first bin</p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"><div class="right-align">
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"><div class="right-align">
 <p>14.29-14.79 are in the second, etc…</p>
 </div>
 </section>
@@ -201,7 +201,7 @@
 <h2></h2>
 <p>The height of the bin is determined by how many observations are placed in the bins</p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"><div class="right-align">
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"><div class="right-align">
 <p>which allows us to see where most observations lie</p>
 </div>
 </section>
@@ -209,7 +209,7 @@
 <h2></h2>
 <p>We can also separate the groups</p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"></section>
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"></section>
 <section id="section-9" class="slide level2 center">
 <h2></h2>
 <p>the <span style="color: #d1295a"><strong>mean</strong></span> is not always aligned with the most observations</p>
@@ -218,12 +218,12 @@
 ## Histograms
 
 -->
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch"></section>
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"></section>
 <section id="section-10" class="slide level2 center">
 <h2></h2>
 <p>If a distribution is skewed, the <span style="color: #d1295a;"><strong>mean</strong></span> moves off center</p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"><div class="right-align">
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch"><div class="right-align">
 <p>and the <span style="color: #782386;"><strong>median</strong></span> is closer to the most observations</p>
 </div>
 </section>
@@ -232,7 +232,7 @@
 <p>The width of a plot is not a great indicator of dispersion<br>
 It’s more of a combination between width and height</p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"><div class="right-align">
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"><div class="right-align">
 <p>Tall and narrow = low dispersion (small variance)<br>
 Short and wide = high dispersion (large variance)</p>
 </div>
@@ -249,7 +249,7 @@ Short and wide = high dispersion (large variance)</p>
 <h2></h2>
 <p>They give us the <span class="large">quartiles</span></p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"><div class="right-align">
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"><div class="right-align">
 <p><span class="large pinkish-red"><strong>25%</strong></span> (dashed) and <span class="large purple"><strong>75%</strong></span> (dotted)</p>
 </div>
 </section>
@@ -257,26 +257,26 @@ Short and wide = high dispersion (large variance)</p>
 <h2></h2>
 <p><span class="large">median</span></p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"><p><br></p>
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"><p><br></p>
 </section>
 <section id="section-15" class="slide level2 center">
 <h2></h2>
 <p><span class="large pinkish-red">whiskers</span></p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-13-1.png" width="960" class="r-stretch"><p><br></p>
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"><p><br></p>
 </section>
 <section id="section-16" class="slide level2 center">
 <h2></h2>
 <p>and <span class="large pinkish-red">outliers</span></p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"><p><br></p>
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"><p><br></p>
 </section>
 <section id="section-17" class="slide level2 smaller center">
 <h2></h2>
 <p>The length of the box is the <strong>Inter-Quartile Range (IQR)</strong><br>
 calculated as the 75% quartile minus 25% quartile</p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch"><div class="right-align">
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-13-1.png" width="960" class="r-stretch"><div class="right-align">
 <p>Length of the whiskers are 1.5 times the <strong>IQR</strong><br>
 <strong>Outliers</strong> are points falling outside the whiskers</p>
 </div>
@@ -306,12 +306,12 @@ calculated as the 75% quartile minus 25% quartile</p>
 <h2></h2>
 <p>combined with a <span class="large pinkish-red">box plot</span></p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch"></section>
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"></section>
 <section id="section-22" class="slide level2 center">
 <h2></h2>
 <p>Violin plots consist of mirrored <span class="large pinkish-red">density plots</span></p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch"></section>
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch"></section>
 <section id="section-23" class="slide level2 center">
 <h2></h2>
 <p>A <span class="large pinkish-red">density plot</span> is a ‘smoothed’ histogram</p>
@@ -325,7 +325,7 @@ calculated as the 75% quartile minus 25% quartile</p>
 <p>The area under the curve is always 1, because the</p>
 <p>the probability of all the values cannot exceed 1</p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-21-1.png" width="960" class="r-stretch"><div class="right-align">
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-16-1.png" width="960" class="r-stretch"><div class="right-align">
 <p>A point on the curve is the <span class="large">estimated probability density</span></p>
 </div>
 </section>
@@ -345,7 +345,7 @@ calculated as the 75% quartile minus 25% quartile</p>
 <h2></h2>
 <p><span class="large pinkish-red">Gridlines</span></p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-23-1.png" width="960" class="r-stretch"><div class="right-align">
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-17-1.png" width="960" class="r-stretch"><div class="right-align">
 <p>allow readers to see the actual values</p>
 </div>
 </section>
@@ -361,7 +361,7 @@ calculated as the 75% quartile minus 25% quartile</p>
 <h2></h2>
 <p><span class="large pinkish-red">Pie charts</span> And if you like it</p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-25-1.png" width="960" class="r-stretch"><div class="right-align">
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch"><div class="right-align">
 <p>you better put a label on it</p>
 </div>
 </section>
@@ -369,7 +369,7 @@ calculated as the 75% quartile minus 25% quartile</p>
 <h2></h2>
 <p><span class="large pinkish-red">Bar plot</span> axes can be rearranged to improve interpretation</p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-26-1.png" width="960" class="r-stretch"><div class="right-align">
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch"><div class="right-align">
 <p>For example, ordered by frequency</p>
 </div>
 </section>
@@ -377,19 +377,19 @@ calculated as the 75% quartile minus 25% quartile</p>
 <h2></h2>
 <p>Show multiple variables</p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-27-1.png" width="960" class="r-stretch"><p>stacked</p>
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-20-1.png" width="960" class="r-stretch"><p>stacked</p>
 </section>
 <section id="section-32" class="slide level2 center">
 <h2></h2>
 <p>Show multiple variables</p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-28-1.png" width="960" class="r-stretch"><p>side-by-side</p>
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-21-1.png" width="960" class="r-stretch"><p>side-by-side</p>
 </section>
 <section id="section-33" class="slide level2 center">
 <h2></h2>
 <p>Show multiple variables</p>
 
-<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-29-1.png" width="960" class="r-stretch"><p>proportional</p>
+<img data-src="03_EDA_files/figure-revealjs/unnamed-chunk-22-1.png" width="960" class="r-stretch"><p>proportional</p>
 </section>
 <section id="section-34" class="slide level2 center">
 <h2></h2>
@@ -672,190 +672,172 @@ calculated as the 75% quartile minus 25% quartile</p>
     </script>
 
     <script id="quarto-html-after-body" type="application/javascript">
-    window.document.addEventListener("DOMContentLoaded", function (event) {
-      const toggleBodyColorMode = (bsSheetEl) => {
-        const mode = bsSheetEl.getAttribute("data-mode");
-        const bodyEl = window.document.querySelector("body");
-        if (mode === "dark") {
-          bodyEl.classList.add("quarto-dark");
-          bodyEl.classList.remove("quarto-light");
-        } else {
-          bodyEl.classList.add("quarto-light");
-          bodyEl.classList.remove("quarto-dark");
-        }
-      }
-      const toggleBodyColorPrimary = () => {
-        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-        if (bsSheetEl) {
-          toggleBodyColorMode(bsSheetEl);
-        }
-      }
-      toggleBodyColorPrimary();  
-      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
-      tabsets.forEach(function(tabset) {
-        const tabby = new Tabby('#' + tabset.id);
-      });
-      const isCodeAnnotation = (el) => {
-        for (const clz of el.classList) {
-          if (clz.startsWith('code-annotation-')) {                     
-            return true;
-          }
-        }
-        return false;
-      }
-      const onCopySuccess = function(e) {
-        // button target
-        const button = e.trigger;
-        // don't keep focus
-        button.blur();
-        // flash "checked"
-        button.classList.add('code-copy-button-checked');
-        var currentTitle = button.getAttribute("title");
-        button.setAttribute("title", "Copied!");
-        let tooltip;
-        if (window.bootstrap) {
-          button.setAttribute("data-bs-toggle", "tooltip");
-          button.setAttribute("data-bs-placement", "left");
-          button.setAttribute("data-bs-title", "Copied!");
-          tooltip = new bootstrap.Tooltip(button, 
-            { trigger: "manual", 
-              customClass: "code-copy-button-tooltip",
-              offset: [0, -8]});
-          tooltip.show();    
-        }
-        setTimeout(function() {
-          if (tooltip) {
-            tooltip.hide();
-            button.removeAttribute("data-bs-title");
-            button.removeAttribute("data-bs-toggle");
-            button.removeAttribute("data-bs-placement");
-          }
-          button.setAttribute("title", currentTitle);
-          button.classList.remove('code-copy-button-checked');
-        }, 1000);
-        // clear code selection
-        e.clearSelection();
-      }
-      const getTextToCopy = function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
-          for (const childEl of codeEl.children) {
-            if (isCodeAnnotation(childEl)) {
-              childEl.remove();
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
             }
           }
-          return codeEl.innerText;
-      }
-      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-        text: getTextToCopy
-      });
-      clipboard.on('success', onCopySuccess);
-      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-          text: getTextToCopy,
-          container: window.document.getElementById('quarto-embedded-source-code-modal')
-        });
-        clipboardModal.on('success', onCopySuccess);
-      }
-        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-        var mailtoRegex = new RegExp(/^mailto:/);
-          var filterRegex = new RegExp("https:\/\/rchaeology\.github\.io\/RchaeoStats\/");
-        var isInternal = (href) => {
-            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          return false;
         }
-        // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-        for (var i=0; i<links.length; i++) {
-          const link = links[i];
-          if (!isInternal(link.href)) {
-            // undo the damage that might have been done by quarto-nav.js in the case of
-            // links that we want to consider external
-            if (link.dataset.originalHref !== undefined) {
-              link.href = link.dataset.originalHref;
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
             }
-          }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
         }
-      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-        const config = {
-          allowHTML: true,
-          maxWidth: 500,
-          delay: 100,
-          arrow: false,
-          appendTo: function(el) {
-              return el.closest('section.slide') || el.parentElement;
-          },
-          interactive: true,
-          interactiveBorder: 10,
-          theme: 'light-border',
-          placement: 'bottom-start',
-        };
-        if (contentFn) {
-          config.content = contentFn;
-        }
-        if (onTriggerFn) {
-          config.onTrigger = onTriggerFn;
-        }
-        if (onUntriggerFn) {
-          config.onUntrigger = onUntriggerFn;
-        }
-          config['offset'] = [0,0];
-          config['maxWidth'] = 700;
-        window.tippy(el, config); 
-      }
-      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-      for (var i=0; i<noterefs.length; i++) {
-        const ref = noterefs[i];
-        tippyHover(ref, function() {
-          // use id or data attribute instead here
-          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-          try { href = new URL(href).hash; } catch {}
-          const id = href.replace(/^#\/?/, "");
-          const note = window.document.getElementById(id);
-          if (note) {
-            return note.innerHTML;
-          } else {
-            return "";
-          }
-        });
-      }
-      const findCites = (el) => {
-        const parentEl = el.parentElement;
-        if (parentEl) {
-          const cites = parentEl.dataset.cites;
-          if (cites) {
-            return {
-              el,
-              cites: cites.split(' ')
-            };
-          } else {
-            return findCites(el.parentElement)
-          }
-        } else {
-          return undefined;
-        }
-      };
-      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-      for (var i=0; i<bibliorefs.length; i++) {
-        const ref = bibliorefs[i];
-        const citeInfo = findCites(ref);
-        if (citeInfo) {
-          tippyHover(citeInfo.el, function() {
-            var popup = window.document.createElement('div');
-            citeInfo.cites.forEach(function(cite) {
-              var citeDiv = window.document.createElement('div');
-              citeDiv.classList.add('hanging-indent');
-              citeDiv.classList.add('csl-entry');
-              var biblioDiv = window.document.getElementById('ref-' + cite);
-              if (biblioDiv) {
-                citeDiv.innerHTML = biblioDiv.innerHTML;
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
               }
-              popup.appendChild(citeDiv);
-            });
-            return popup.innerHTML;
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp("https:\/\/rchaeology\.github\.io\/RchaeoStats\/");
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
           });
         }
-      }
-    });
-    </script>
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
     
 
 </body></html>
